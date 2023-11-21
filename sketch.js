@@ -7,7 +7,7 @@
 
 
 let grid = [];
-let tilesize = 72;
+let tilesize = 30;
 let wScale;
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -30,7 +30,7 @@ function displayGrid(){
     for(let m =0;m < grid[n].length;m++){
       noStroke();
       fill(190);
-      text(grid[n][m][0],m*tilesize,n*tilesize); // terrain type
+      text(grid[n][2],m*tilesize,n*tilesize); // terrain type
       if(grid[n][m][0] === 0){ //water // drawing correct terrain
         r = 40; 
         g = 80; 
@@ -62,23 +62,33 @@ function createGrid(numx,numy) {
   for(let n =0;n<numy;n++){
     grid.push([]);
     for(let m =0;m<numx;m++){
-      grid[n].push(tileGenerate(m));
-      // console.log(grid[n]);
+
+      if(random(100)>90){
+        grid[n].push(tileGenerate(m,n,true));
+      }
+      else{
+        grid[n].push(tileGenerate(m,n,false));
+      }
+      console.log(grid[n]);
       
     }
   }
 }
 
-function tileGenerate(m) {
+function tileGenerate(m,n,peak) {
   let array = [];
-  //array.push(Math.floor(random(0,4))); //terrain type (grass,water,rock,tree)
   // let n2 = n*4;
   // let m2 = m*4;
   // n2 = noise(,);
-  array.push(Math.floor(noise(m)*4));
+  array.push(Math.floor(noise(m,n+m)*2.11)); //terrain type (grass,water,rock,tree)
   // array.push(Math.floor(random(0,4))); //biome type (4 of savannah,desert,tundra,wastes,plains,forest,swamp)
   array.push(0); //territory (unclaimed only)
-  array.push(Math.floor(random(0,7))); // density for better generation
+  if(peak){
+    array.push(4); // density for better generation
+  }
+  else{
+    array.push(0);
+  }
   // console.log(array);
   return array;
 }
