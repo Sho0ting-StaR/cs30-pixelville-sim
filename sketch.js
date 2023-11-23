@@ -5,7 +5,7 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-
+let biome;
 let grid = [];
 let peaks = [];
 let tilesize = 30;
@@ -13,8 +13,11 @@ let wScale;
 let winX = 50;
 let winY = 30;
 function setup() {
+  biome = Math.floor(random(1,5));
   createCanvas(windowWidth, windowHeight);
   wScale = windowHeight/(tilesize/2);
+  // background(50);
+  // text("loading...",windowWidth/2, windowHeight/2);
   createGrid(winX,winY);
   // densityMapping(peaks);
   geoMapping(grid); 
@@ -25,8 +28,6 @@ function draw() {
   displayGrid();
 }
 
-
-
 function displayGrid(){
   let r;
   let g;
@@ -36,25 +37,108 @@ function displayGrid(){
       noStroke();
       fill(190);
       // text(grid[n][m][2],m*tilesize,n*tilesize); // terrain type
-      if(grid[n][m][0] === 0){ //water // drawing correct terrain
-        r = 40; 
-        g = 80; 
-        b= random(100,131);
+      if(biome === 1){ // forest
+        if(grid[n][m][0] < 22){ //water // drawing correct terrain
+          r = 40; 
+          g = 80; 
+          b= random(100,131);
+        }
+        else if(grid[n][m][0] <31){ // beach/sand
+          r = 240; 
+          g = 170; 
+          b = 95;
+        }
+        else if(grid[n][m][0] <68){ // grass
+          r = 40; 
+          g = 100; 
+          b = 30;
+        }
+        else if(grid[n][m][0] < 89){ // forest/trees
+          r =0; 
+          g =55; 
+          b =0;
+        }
+        else if(grid[n][m][0] <= 100){ //rock
+          r = 115; 
+          g = 115; 
+          b = 115;
+        }
       }
-      else if(grid[n][m][0] === 1){ // grass
-        r = 40; 
-        g = 80; 
-        b = 30;
+      if(biome === 2){ // dessert
+        if(grid[n][m][0] < 10){ //water // drawing correct terrain
+          r = 40; 
+          g = 80; 
+          b= random(100,131);
+        }
+        else if(grid[n][m][0] < 50){ // beach/sand
+          r = 230; 
+          g = 160; 
+          b = 90;
+        }
+        else if(grid[n][m][0] < 62){ // grass
+          r = 33; 
+          g = 92; 
+          b = 0;
+        }
+        else if(grid[n][m][0] < 78){ // forest/trees
+          r = 38; 
+          g = 72; 
+          b = 0;
+        }
+        else if(grid[n][m][0] <=100){ //rock
+          r = 185; 
+          g = 90; 
+          b = 0;
+        }
       }
-      else if(grid[n][m][0] === 2){ // forest
-        r =0; 
-        g =35; 
-        b =0;
+      if(biome === 3){ // tundra
+        if(grid[n][m][0] < 18){ //water/ice // drawing correct terrain
+          r = 100; 
+          g = 100; 
+          b= random(210,231);
+        }
+        else if(grid[n][m][0] < 62){ // grass/snow
+          r = 210; 
+          g = 210; 
+          b = 225;
+        }
+        else if(grid[n][m][0] < 78){ // forest/trees
+          r = 32; 
+          g = 62; 
+          b = 35;
+        }
+        else if(grid[n][m][0] <=100){ //rock
+          r = 80; 
+          g = 80; 
+          b = 80;
+        }
       }
-      else if(grid[n][m][0] === 3){ //rock
-        r = 135; 
-        g = 135; 
-        b = 135;
+      if(biome === 4){ // archipelagos
+        if(grid[n][m][0] < 50){ //water // drawing correct terrain
+          r = 0; 
+          g = 10; 
+          b= random(85,120);
+        }
+        else if(grid[n][m][0] < 78){ // beach/sand
+          r = 230; 
+          g = 160; 
+          b = 90;
+        }
+        else if(grid[n][m][0] < 90){ // grass
+          r = 43; 
+          g = 112; 
+          b = 10;
+        }
+        else if(grid[n][m][0] < 95){ // forest/trees
+          r = 22; 
+          g = 80; 
+          b = 30;
+        }
+        else if(grid[n][m][0] <=100){ //rock
+          r = 140; 
+          g = 145; 
+          b = 148;
+        }
       }
       fill(r,g,b);
       rect(m*tilesize,n*tilesize,tilesize,tilesize);
@@ -89,7 +173,7 @@ function geoMapping(ref){ // second option is every tile looks for the dist from
     for(let x = 0;x<ref[y].length;x++){
       let closest = 100;
       for(let p of peaks){
-        let d = Math.floor(dist(x,y,p[0],p[1]));
+        let d = Math.floor(dist(x,y,p[0],p[1])/2.5); // good formula for deterioration
         console.log(x,y,d);
         if(d<closest){
           closest = d;
@@ -97,7 +181,7 @@ function geoMapping(ref){ // second option is every tile looks for the dist from
         }
       }
       console.log(closest);
-      if((grid[y][x][0] - closest) < 0){
+      if(grid[y][x][0] - closest < 0){ // water is the minimum
         grid[y][x][0] = 0;
       }
       else{
@@ -112,7 +196,7 @@ function createGrid(numx,numy) {
   for(let n =0;n<numy;n++){
     grid.push([]);
     for(let m =0;m<numx;m++){
-      if(random(100)>95){
+      if(random(100)>97){
         grid[n].push(tileGenerate(m,n,true));
       }
       else{
@@ -128,7 +212,7 @@ function tileGenerate(m,n,peak) {
   // let m2 = m*4;
   // n2 = noise(,);
   // array.push(Math.floor(noise(m,n+m)*2.50)); //terrain type (grass,water,rock,tree)
-  let w = Math.floor(random(0,4));// terrain
+  let w = Math.floor(random(100));// terrain
   array.push(w); // temporary terrain type//biome type (4 of savannah,desert,tundra,wastes,plains,forest,swamp)
   array.push(0); //territory (unclaimed only)
   if(peak){
