@@ -5,7 +5,19 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
+class Bacteria {
+  constructor (x,y,race,title1,title2){
+    this.x=x;
+    this.y=y;
+    this.race=race;
+    this.name = concat(title1,title2);
+  }
+}
+let surnames = [" johnson"," falcon"," roberts"," tiny"," humble"," berrington"," aftons"];
+let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy"];
+let races = [];
 let biome;
+let population = [];
 let grid = [];
 let peaks = [];
 let tilesize = 30;
@@ -25,7 +37,30 @@ function setup() {
 
 function draw() {
   // circle(mouseX,mouseY,50);
-  displayGrid();
+  if(frameCount%12 === 0){
+    displayGrid();
+  }
+  displayBact();
+}
+
+function mousePressed(){ // change to calling a seperate function***
+  let name = names[Math.floor(random(names.length))];
+  let surname = surnames[Math.floor(random(surnames.length))]; // new person gets name
+  if(races.length===0){
+    let racename = surname.concat("ian"); // new race creation
+    races.push(racename);
+    races[races.indexOf(racename)].push(color(random(0,256),random(0,256),random(0,256))); // making identifiers for new race
+    population.push(racename); // global populus tracker
+    population[population.indexOf(racename)].push(new Bacteria(mouseX,mouseY,races[racename],name,surname)); // adding new person to the world populus
+  }
+}
+
+function displayBact(){
+  for(let p of population){
+    for(let b of population[p]){
+      console.log(population[p][b]);
+    }
+  }
 }
 
 function displayGrid(){
