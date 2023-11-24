@@ -100,7 +100,7 @@ function displayGrid(){
         }
       }
       if(biome === 2){ // dessert
-        if(grid[n][m][0] < 10){ //water // drawing correct terrain
+        if(grid[n][m][0] < 7){ //water // drawing correct terrain
           r = 40; 
           g = 80; 
           b= random(100,131);
@@ -110,12 +110,12 @@ function displayGrid(){
           g = 160; 
           b = 90;
         }
-        else if(grid[n][m][0] < 62){ // grass
+        else if(grid[n][m][0] < 60){ // grass
           r = 33; 
           g = 92; 
           b = 0;
         }
-        else if(grid[n][m][0] < 78){ // forest/trees
+        else if(grid[n][m][0] < 70){ // forest/trees
           r = 38; 
           g = 72; 
           b = 0;
