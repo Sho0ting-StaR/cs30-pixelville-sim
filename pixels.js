@@ -47,18 +47,19 @@ function mousePressed(){ // change to calling a seperate function***
   let name = names[Math.floor(random(names.length))];
   let surname = surnames[Math.floor(random(surnames.length))]; // new person gets name
   if(races.length===0){
-    let racename = surname.concat("ian"); // new race creation
+    let racename = [surname.concat("ian")]; // new race creation
     races.push(racename);
-    races[races.indexOf(racename)].push(color(random(0,256),random(0,256),random(0,256))); // making identifiers for new race
+    races[races.indexOf(racename)].push(color(random(0,255),random(0,255),random(0,255))); // making identifiers for new race
     population.push(racename); // global populus tracker
     population[population.indexOf(racename)].push(new Bacteria(mouseX,mouseY,races[racename],name,surname)); // adding new person to the world populus
   }
 }
 
 function displayBact(){
-  for(let p of population){
-    for(let b of population[p]){
+  for(let p = 0; p< population.length;p++){
+    for(let b = 0;b < population[p].length; b ++){
       console.log(population[p][b]);
+      rect(population[p][b][0],population[p][b][1],population[p][b].size,population[p][b].size); // ****** get this working
     }
   }
 }
@@ -216,7 +217,7 @@ function geoMapping(ref){ // second option is every tile looks for the dist from
         }
       }
       console.log(closest);
-      if(grid[y][x][0] - closest < 0){ // water is the minimum
+      if(grid[y][x][0] - closest <= 0){ // water is the minimum
         grid[y][x][0] = 0;
       }
       else{
