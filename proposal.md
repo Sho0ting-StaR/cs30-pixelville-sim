@@ -1,6 +1,6 @@
 # project description
 
-my project is about..
+my project is a mildly complex simlulation of physical,social and political growth in society portrayed in simple graphics
 
 ## needs to have list
 - biomes ℅₼₽∫℮₸ℓ

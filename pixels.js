@@ -5,16 +5,9 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-class Bacteria {
-  constructor (x,y,race,title1,title2){
-    this.x=x;
-    this.y=y;
-    this.race=race;
-    this.name = concat(title1,title2);
-  }
-}
-let surnames = [" johnson"," falcon"," roberts"," tiny"," humble"," berrington"," aftons"];
+let surnames = [" johnson"," falcon"," roberts"," tiny"," humble"," berrington"," afton"];
 let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy"];
+let behaviours = ["explorer","cautious","dumb"];
 let races = [];
 let biome;
 let population = [];
@@ -40,6 +33,11 @@ function draw() {
   if(frameCount%12 === 0){
     displayGrid();
   }
+  for(let p = 0; p< population.length;p++){
+    for(let b = 2;b < population[p].length; b ++){
+      population[p][b].aging();
+    }
+  }
   displayBact();
 }
 
@@ -48,21 +46,58 @@ function mousePressed(){ // change to calling a seperate function***
   let surname = surnames[Math.floor(random(surnames.length))]; // new person gets name
   if(races.length===0){
     let racename = [surname.concat("ian")]; // new race creation
+    console.log(racename + "racename");
     races.push(racename);
+    console.log(races);
     races[races.indexOf(racename)].push(color(random(0,255),random(0,255),random(0,255))); // making identifiers for new race
     population.push(racename); // global populus tracker
-    population[population.indexOf(racename)].push(new Bacteria(mouseX,mouseY,races[racename],name,surname)); // adding new person to the world populus
+    population[population.indexOf(racename)].push(new Bacteria(mouseX,mouseY,racename,name,surname)); // adding new person to the world populus [population.indexOf(racename)]***
+  }
+  else{ // new person same race
+    let racename = [races[races.length-1]];
+    population[population.indexOf(racename)].push(new Bacteria(mouseX,mouseY,racename,name,surname)); // adding new person to the world populus
   }
 }
 
 function displayBact(){
   for(let p = 0; p< population.length;p++){
-    for(let b = 0;b < population[p].length; b ++){
-      console.log(population[p][b]);
-      rect(population[p][b][0],population[p][b][1],population[p][b].size,population[p][b].size); // ****** get this working
+    for(let b = 2;b < population[p].length; b ++){
+      // console.log(population[p][b].age + population[p][b].name);
+      rect(population[p][b].x,population[p][b].y,population[p][b].size,population[p][b].size); // ****** get this working population[p][0] add back the p**
     }
   }
 }
+
+class Bacteria {
+  constructor (x,y,race,title1,title2){
+    this.x=x;
+    this.y=y;
+    this.race=race;
+    this.name = concat(title1,title2);
+    this.size = 3;
+    this.age = 0;
+    this.personality = behaviours[Math.floor(random(0,3))]; // deciding movement behaviours
+  }
+  aging(){ // growing with age and to decide when a bacteria will pass away
+    if(frameCount%300 === 0){
+      this.age ++;
+      console.log(this.age + this.name);
+    }
+    if(this.age>19){
+      this.size = 5;
+    }
+    else if(this.age>8){
+      this.size = 4;
+    }
+  }
+  stroll(){ // add behaviour, will make different movement deciders later on
+    let dx = Math.floor(random(-3,4));
+    let dy = Math.floor(random(-3,4));
+    this.x += dx;
+    this.y += dy;
+  }
+}
+
 
 function displayGrid(){
   let r;
@@ -186,7 +221,7 @@ function displayGrid(){
 }
 
 function densityMapping(ref){
-  console.log(peaks.length);
+  // console.log(peaks.length);
   for(let l of ref){
     let x = l[0];
     let y = l[1];
@@ -210,13 +245,13 @@ function geoMapping(ref){ // second option is every tile looks for the dist from
       let closest = 100;
       for(let p of peaks){
         let d = Math.floor(dist(x,y,p[0],p[1])/2.5); // good formula for deterioration
-        console.log(x,y,d);
+        // console.log(x,y,d);
         if(d<closest){
           closest = d;
-          console.log(p + " current point");
+          // console.log(p + " current point");
         }
       }
-      console.log(closest);
+      // console.log(closest);
       if(grid[y][x][0] - closest <= 0){ // water is the minimum
         grid[y][x][0] = 0;
       }
