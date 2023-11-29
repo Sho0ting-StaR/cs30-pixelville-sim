@@ -3,7 +3,7 @@
 my project is a mildly complex simlulation of physical,social and political growth in society portrayed in simple graphics
 
 ## needs to have list
-- biomes ℅₼₽∫℮₸ℓ
+- 4 unique biomes ✔
 - 4 jobs(wood, rock, farm, apartment) ҉
 - textures for the world ҉
 - oop coded population ҉
@@ -12,6 +12,8 @@ my project is a mildly complex simlulation of physical,social and political grow
 - entering houses. ҉
 - full profiles ҉
 - highlight scrolling ҉
+- sound effects ҉
+- background music ҉
 ## nice to have list
 - better terrain generation ҉
 - difficulty toggles ҉

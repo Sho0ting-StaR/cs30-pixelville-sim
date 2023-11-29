@@ -5,8 +5,9 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-let surnames = [" johnson"," falcon"," roberts"," tiny"," humble"," berrington"," afton"];
-let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy"];
+let suffixes = ["ians","ius","sons","dotirs","kin","tyrs"];
+let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre"];
+let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre"];
 let behaviours = ["explorer","cautious","dumb"];
 let races = [];
 let biome;
@@ -34,37 +35,44 @@ function draw() {
     displayGrid();
   }
   for(let p = 0; p< population.length;p++){
-    for(let b = 2;b < population[p].length; b ++){
-      population[p][b].aging();
+    population[p].aging();
+    if(frameCount%12===0){
+      population[p].stroll();
     }
   }
   displayBact();
+  if(population.length>0){
+    text(population.length,15,15);
+  }
+  else{
+    text(0,15,15);
+  }
 }
 
 function mousePressed(){ // change to calling a seperate function***
   let name = names[Math.floor(random(names.length))];
   let surname = surnames[Math.floor(random(surnames.length))]; // new person gets name
-  if(races.length===0){
-    let racename = [surname.concat("ian")]; // new race creation
-    console.log(racename + "racename");
+  console.log(name + " " + surname);
+  if(races.length===0 || random(100)>91){
+    let racename = [surname.concat(suffixes[Math.floor(random(0,6))])]; // new race creation
+    // console.log(racename + "racename");
     races.push(racename);
-    console.log(races);
-    races[races.indexOf(racename)].push(color(random(0,255),random(0,255),random(0,255))); // making identifiers for new race
-    population.push(racename); // global populus tracker
-    population[population.indexOf(racename)].push(new Bacteria(mouseX,mouseY,racename,name,surname)); // adding new person to the world populus [population.indexOf(racename)]***
+    console.log(races[races.indexOf(racename)]);
+    races[races.indexOf(racename)].push(color(130,random(0,255),50)); // making identifiers for new race
+    population.push(new Bacteria(mouseX,mouseY,racename,name,surname)); // adding new person to the world populus [population.indexOf(racename)]***
   }
   else{ // new person same race
     let racename = [races[races.length-1]];
-    population[population.indexOf(racename)].push(new Bacteria(mouseX,mouseY,racename,name,surname)); // adding new person to the world populus
+    population.push(new Bacteria(mouseX,mouseY,racename,name,surname)); // adding new person to the world populus      population.indexOf(racename)
   }
+
 }
 
 function displayBact(){
   for(let p = 0; p< population.length;p++){
-    for(let b = 2;b < population[p].length; b ++){
-      // console.log(population[p][b].age + population[p][b].name);
-      rect(population[p][b].x,population[p][b].y,population[p][b].size,population[p][b].size); // ****** get this working population[p][0] add back the p**
-    }
+    // console.log(population[p][b].age + population[p][b].name);
+    fill(races[races.indexOf(population[p].race)][1]); // fixxxxx thissss **********
+    rect(population[p].x,population[p].y,population[p].size,population[p].size);
   }
 }
 
@@ -81,7 +89,6 @@ class Bacteria {
   aging(){ // growing with age and to decide when a bacteria will pass away
     if(frameCount%300 === 0){
       this.age ++;
-      console.log(this.age + this.name);
     }
     if(this.age>19){
       this.size = 5;
