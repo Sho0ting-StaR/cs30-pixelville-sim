@@ -55,23 +55,21 @@ function mousePressed(){ // change to calling a seperate function***
   console.log(name + " " + surname);
   if(races.length===0 || random(100)>91){
     let racename = [surname.concat(suffixes[Math.floor(random(0,6))])]; // new race creation
-    // console.log(racename + "racename");
     races.push(racename);
-    console.log(races[races.indexOf(racename)]);
-    races[races.indexOf(racename)].push(color(130,random(0,255),50)); // making identifiers for new race
+    races[races.length-1].push(color(130,random(0,255),50)); // making identifiers for new race
     population.push(new Bacteria(mouseX,mouseY,racename,name,surname)); // adding new person to the world populus [population.indexOf(racename)]***
   }
   else{ // new person same race
     let racename = [races[races.length-1]];
+    console.log(racename);
     population.push(new Bacteria(mouseX,mouseY,racename,name,surname)); // adding new person to the world populus      population.indexOf(racename)
   }
-
 }
 
 function displayBact(){
   for(let p = 0; p< population.length;p++){
-    // console.log(population[p][b].age + population[p][b].name);
-    fill(races[races.indexOf(population[p].race)][1]); // fixxxxx thissss **********
+    // console.log(population[p].race[1]);
+    fill(population[p].race[0][1]); // fixxxxx thissss **********
     rect(population[p].x,population[p].y,population[p].size,population[p].size);
   }
 }

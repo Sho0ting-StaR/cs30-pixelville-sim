@@ -7,7 +7,7 @@ my project is a mildly complex simlulation of physical,social and political grow
 - 4 jobs(wood, rock, farm, apartment) ҉
 - textures for the world ҉
 - oop coded population ҉
-- population count ҉
+- population count ✔
 - resource requisits. ҉
 - entering houses. ҉
 - full profiles ҉
