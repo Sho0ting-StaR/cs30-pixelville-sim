@@ -31,14 +31,14 @@ function setup() {
 
 function draw() {
   // circle(mouseX,mouseY,50);
-  if(frameCount%12 === 0){
-    displayGrid();
-  }
+  // if(frameCount%12 === 0){
+  displayGrid();
+  // }
   for(let p = 0; p< population.length;p++){
     population[p].aging();
-    if(frameCount%12===0){
-      population[p].stroll();
-    }
+    // if(frameCount%12===0){
+    population[p].stroll();
+    // }
   }
   displayBact();
   if(population.length>0){
@@ -56,7 +56,7 @@ function mousePressed(){ // change to calling a seperate function***
   if(races.length===0 || random(100)>91){
     let racename = [surname.concat(suffixes[Math.floor(random(0,6))])]; // new race creation
     races.push(racename);
-    races[races.length-1].push(color(130,random(0,255),50)); // making identifiers for new race
+    races[races.length-1].push(color(random(0,255),random(0,255),random(0,255))); // making identifiers for new race
     population.push(new Bacteria(mouseX,mouseY,racename,name,surname)); // adding new person to the world populus [population.indexOf(racename)]***
   }
   else{ // new person same race
@@ -83,6 +83,7 @@ class Bacteria {
     this.size = 3;
     this.age = 0;
     this.personality = behaviours[Math.floor(random(0,3))]; // deciding movement behaviours
+    this.repeat;
   }
   aging(){ // growing with age and to decide when a bacteria will pass away
     if(frameCount%300 === 0){
@@ -96,10 +97,19 @@ class Bacteria {
     }
   }
   stroll(){ // add behaviour, will make different movement deciders later on
-    let dx = Math.floor(random(-3,4));
-    let dy = Math.floor(random(-3,4));
-    this.x += dx;
-    this.y += dy;
+    if(!this.repeat>0){
+      this.repeat = Math.floor(random(8)); //***  turn into a better movement pattern by repeating movements set amount of time
+    }
+    let dx = random(-0.35,0.351);
+    let dy = random(-0.35,0.351);
+    console.log(dx,dy);
+
+    if((dx<0&&this.x>=dx)||(dx>=0&&this.x<=width-dx)){
+      this.x += dx;
+    }
+    if((dy>0&&this.y>=dy)||(dy<=0&&this.y<=width-dy)){
+      this.y += dy;
+    }
   }
 }
 
@@ -263,7 +273,6 @@ function geoMapping(ref){ // second option is every tile looks for the dist from
       else{
         grid[y][x][0] -= closest;
       }
-      // console.log(grid[y][x]);
     }
   }
 }
@@ -284,9 +293,6 @@ function createGrid(numx,numy) {
 
 function tileGenerate(m,n,peak) {
   let array = [];
-  // let n2 = n*4;
-  // let m2 = m*4;
-  // n2 = noise(,);
   // array.push(Math.floor(noise(m,n+m)*2.50)); //terrain type (grass,water,rock,tree)
   let w = Math.floor(random(100));// terrain
   array.push(w); // temporary terrain type//biome type (4 of savannah,desert,tundra,wastes,plains,forest,swamp)
@@ -298,6 +304,5 @@ function tileGenerate(m,n,peak) {
   else{
     array.push(0);
   }
-  // console.log(array);
   return array;
 }
