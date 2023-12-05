@@ -22,23 +22,19 @@ function setup() {
   biome = Math.floor(random(1,5));
   createCanvas(windowWidth, windowHeight);
   wScale = windowHeight/(tilesize/2);
-  // background(50);
-  // text("loading...",windowWidth/2, windowHeight/2);
+  background(0);
   createGrid(winX,winY);
-  // densityMapping(peaks);
   geoMapping(grid); 
 }
 
 function draw() {
-  // circle(mouseX,mouseY,50);
-  // if(frameCount%12 === 0){
   displayGrid();
-  // }
   for(let p = 0; p< population.length;p++){
-    population[p].aging();
-    // if(frameCount%12===0){
-    population[p].stroll();
-    // }
+    population[p].death();
+    if(population[p].living){
+      population[p].aging();
+      population[p].stroll();
+    }
   }
   displayBact();
   if(population.length>0){
@@ -69,7 +65,12 @@ function mousePressed(){ // change to calling a seperate function***
 function displayBact(){
   for(let p = 0; p< population.length;p++){
     // console.log(population[p].race[1]);
-    fill(population[p].race[0][1]); // fixxxxx thissss **********
+    if(population[p].living===true){
+      fill(population[p].race[0][1]); // fixxxxx thissss **********
+    }
+    else{
+      fill(0);
+    }
     rect(population[p].x,population[p].y,population[p].size,population[p].size);
   }
 }
@@ -84,11 +85,12 @@ class Bacteria {
     this.age = 0;
     this.personality = behaviours[Math.floor(random(0,3.3))]; // deciding movement behaviours
     this.repeat;
-    this.allowed = ["sand","ground","house","apartment","path"];
+    this.allowed = [1,2,5,6,7,8]; //sand,ground,ice,house,path,apartment
     this.current;
     if(this.personality === "swimmer"){
-      this.allowed.push("water");
+      this.allowed.push(0);
     }
+    this.living = true;
   }
   aging(){ // growing with age and to decide when a bacteria will pass away
     if(frameCount%300 === 0){
@@ -107,9 +109,8 @@ class Bacteria {
     }
     let dx = random(-0.35,0.351);
     let dy = random(-0.35,0.351);
-    console.log(tile);
-    let tile = String(grid[Math.floor((this.y+dy)/tilesize)][Math.floor((this.x+dx)/tilesize)][3]); //***l wont turn into strings find a function 
-    if((grid[Math.floor((this.y+dy)/tilesize)][Math.floor((this.x+dx)/tilesize)][3]) in this.allowed){
+    // console.log(this.allowed.includes(grid[Math.floor((this.y+dy)/tilesize)][Math.floor((this.x+dx)/tilesize)][3]));
+    if(this.allowed.includes(grid[Math.floor((this.y+dy)/tilesize)][Math.floor((this.x+dx)/tilesize)][3])){
       if((dx<0&&this.x>=dx)||(dx>=0&&this.x<=width-dx)){
         this.x += dx;
       }
@@ -118,8 +119,15 @@ class Bacteria {
       }
     }
   }
+  death(){
+    if(this.age>85||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])){ // make ethnic life expectancy variable??
+      this.living = false;
+      let scale = this.size;
+      this.age=100;
+      this.size = scale;
+    }
+  }
 }
-
 
 function displayGrid(){
   let r;
@@ -135,31 +143,31 @@ function displayGrid(){
           r = 40; 
           g = 80; 
           b= random(100,131);
-          grid[n][m][3] = "water";
+          grid[n][m][3] = 0;
         }
         else if(grid[n][m][0] <31){ // beach/sand
           r = 240; 
           g = 170; 
           b = 95;
-          grid[n][m][3] = "sand";
+          grid[n][m][3] = 1;
         }
         else if(grid[n][m][0] <68){ // grass
           r = 40; 
           g = 100; 
           b = 30;
-          grid[n][m][3] = "ground";
+          grid[n][m][3] = 2;
         }
         else if(grid[n][m][0] < 89){ // forest/trees
           r =0; 
           g =55; 
           b =0;
-          grid[n][m][3] = "trees";
+          grid[n][m][3] = 3;
         }
         else if(grid[n][m][0] <= 100){ //rock
           r = 115; 
           g = 115; 
           b = 115;
-          grid[n][m][3] = "stone";
+          grid[n][m][3] = 4;
         }
       }
       if(biome === 2){ // dessert
@@ -167,57 +175,57 @@ function displayGrid(){
           r = 40; 
           g = 80; 
           b= random(100,131);
-          grid[n][m][3] = "water";
+          grid[n][m][3] = 0;
         }
         else if(grid[n][m][0] < 50){ // beach/sand
           r = 230; 
           g = 160; 
           b = 90;
-          grid[n][m][3] = "sand";
+          grid[n][m][3] = 1;
         }
         else if(grid[n][m][0] < 60){ // grass
           r = 33; 
           g = 92; 
           b = 0;
-          grid[n][m][3] = "ground";
+          grid[n][m][3] = 2;
         }
         else if(grid[n][m][0] < 70){ // forest/trees
           r = 38; 
           g = 72; 
           b = 0;
-          grid[n][m][3] = "trees";
+          grid[n][m][3] = 3;
         }
         else if(grid[n][m][0] <=100){ //rock
           r = 185; 
           g = 90; 
           b = 0;
-          grid[n][m][3] = "stone";
+          grid[n][m][3] = 4;
         }
       }
       if(biome === 3){ // tundra
         if(grid[n][m][0] < 18){ //water/ice // drawing correct terrain
-          r = 100; 
-          g = 100; 
-          b= random(210,231);
-          grid[n][m][3] = "ice";
+          r = 160; 
+          g = 160; 
+          b= random(210,241);
+          grid[n][m][3] = 5; // ice
         }
         else if(grid[n][m][0] < 62){ // grass/snow
           r = 210; 
           g = 210; 
           b = 225;
-          grid[n][m][3] = "ground";
+          grid[n][m][3] = 2; // ground
         }
         else if(grid[n][m][0] < 78){ // forest/trees
           r = 32; 
           g = 62; 
           b = 35;
-          grid[n][m][3] = "trees";
+          grid[n][m][3] = 3; //trees
         }
         else if(grid[n][m][0] <=100){ //rock
           r = 80; 
           g = 80; 
           b = 80;
-          grid[n][m][3] = "stone";
+          grid[n][m][3] = 4; // stone
         }
       }
       if(biome === 4){ // archipelagos
@@ -225,44 +233,43 @@ function displayGrid(){
           r = 0; 
           g = 10; 
           b= random(85,120);
-          grid[n][m][3] = "water";
+          grid[n][m][3] = 0; // water
         }
         else if(grid[n][m][0] < 78){ // beach/sand
           r = 230; 
           g = 160; 
           b = 90;
-          grid[n][m][3] = "sand";
+          grid[n][m][3] = 1; // sand
         }
         else if(grid[n][m][0] < 90){ // grass
           r = 43; 
           g = 112; 
           b = 10;
-          grid[n][m][3] = "ground";
+          grid[n][m][3] = 2; // ground
         }
         else if(grid[n][m][0] < 95){ // forest/trees
           r = 22; 
           g = 80; 
           b = 30;
-          grid[n][m][3] = "trees";
+          grid[n][m][3] = 3; // trees
         }
         else if(grid[n][m][0] <=100){ //rock
           r = 140; 
           g = 145; 
           b = 148;
-          grid[n][m][3] = "stone";
+          grid[n][m][3] = 4; // stone
         }
       }
       fill(r,g,b);
       rect(m*tilesize,n*tilesize,tilesize,tilesize);
-      fill(255);
-      text(grid[n][m][2],m*tilesize,n*tilesize);
-      // console.log(grid[n][m][2]); density
+      // fill(255);
+      // text(grid[n][m][2],m*tilesize,n*tilesize);
+
     }
   }
 }
 
 function densityMapping(ref){
-  // console.log(peaks.length);
   for(let l of ref){
     let x = l[0];
     let y = l[1];
@@ -270,9 +277,7 @@ function densityMapping(ref){
       for(let ud = -1; ud<2; ud++){
         if(y-ud>=0&&y-ud<winY&&x-lr>=0&&x-lr<winX){ // border checking
           if(ud !== 0&&lr !== 0){ // making sure only neighbours
-            // console.log(grid[y][x][2] + " peak " + l[2]);
             grid[y-ud][x-lr][2] = structuredClone(grid[y][x][2]) - 1; // decreasing height around peaks
-            // console.log(grid[y-ud][x-lr][2]+" changed");
           }
         }
       }
