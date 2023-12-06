@@ -8,7 +8,8 @@
 let suffixes = ["ians","ius","sons","dotirs","kin","tyrs"];
 let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre"];
 let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre"];
-let behaviours = ["explorer","cautious","dumb","swimmer"];
+let behaviours = ["explorer","cautious","dumb","swimmer","angry"];
+let roles = ["soldier","parent","worker"];
 let races = [];
 let biome;
 let population = [];
@@ -34,6 +35,7 @@ function draw() {
     if(population[p].living){
       population[p].aging();
       population[p].stroll();
+      population[p].action();
     }
   }
   displayBact();
@@ -45,20 +47,23 @@ function draw() {
   }
 }
 
-function mousePressed(){ // change to calling a seperate function***
-  let name = names[Math.floor(random(names.length))];
-  let surname = surnames[Math.floor(random(surnames.length))]; // new person gets name
+function mousePressed(){
+  newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY);
+}
+
+function newBorn(ethnicity,surname,x,y){
+  let name = names[Math.floor(random(names.length))]; // new person gets name
   console.log(name + " " + surname);
-  if(races.length===0 || random(100)>91){
+  if(races.length===0 || random(300)>291||ethnicity==="none"){
     let racename = [surname.concat(suffixes[Math.floor(random(0,6))])]; // new race creation
     races.push(racename);
-    races[races.length-1].push(color(random(0,255),random(0,255),random(0,255))); // making identifiers for new race
-    population.push(new Bacteria(mouseX,mouseY,racename,name,surname)); // adding new person to the world populus [population.indexOf(racename)]***
+    races[races.length-1].push(color(random(0,255),random(0,255),random(0,255)));
+    colour = races[races.length-1][1]; // making identifiers for new race
+    population.push(new Bacteria(x,y,racename,name,surname,colour)); // adding new person to the world populus [population.indexOf(racename)]***
   }
   else{ // new person same race
-    let racename = [races[races.length-1]];
-    console.log(racename);
-    population.push(new Bacteria(mouseX,mouseY,racename,name,surname)); // adding new person to the world populus      population.indexOf(racename)
+    colour = races[races.indexOf(ethnicity)][1];
+    population.push(new Bacteria(x,y,ethnicity,name,surname,colour)); // adding new person to the world populus      population.indexOf(racename)
   }
 }
 
@@ -66,7 +71,7 @@ function displayBact(){
   for(let p = 0; p< population.length;p++){
     // console.log(population[p].race[1]);
     if(population[p].living===true){
-      fill(population[p].race[0][1]); // fixxxxx thissss **********
+      fill(population[p].rgb); // fixxxxx thissss **********
     }
     else{
       fill(0);
@@ -76,24 +81,31 @@ function displayBact(){
 }
 
 class Bacteria {
-  constructor (x,y,race,title1,title2){
+  constructor (x,y,race,title1,title2,colour){
     this.x=x;
     this.y=y;
     this.race=race;
     this.name = concat(title1,title2);
+    this.surname = (title2);
     this.size = 3;
     this.age = 0;
     this.personality = behaviours[Math.floor(random(0,3.3))]; // deciding movement behaviours
     this.repeat;
     this.allowed = [1,2,5,6,7,8]; //sand,ground,ice,house,path,apartment
     this.current;
+    this.maxage = Math.floor(random(62,111));
+    this.rgb = colour;
+    this.skill = roles[Math.floor(random(2))];
+    if(this.skill==="parent"){
+      console.log("parent");
+    }
     if(this.personality === "swimmer"){
       this.allowed.push(0);
     }
     this.living = true;
   }
   aging(){ // growing with age and to decide when a bacteria will pass away
-    if(frameCount%300 === 0){
+    if(frameCount%198 === 0){
       this.age ++;
     }
     if(this.age>19){
@@ -120,11 +132,16 @@ class Bacteria {
     }
   }
   death(){
-    if(this.age>85||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])){ // make ethnic life expectancy variable??
+    if(this.age>this.maxage||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])){ // make ethnic life expectancy variable??
       this.living = false;
       let scale = this.size;
       this.age=100;
       this.size = scale;
+    }
+  }
+  action(){
+    if(this.skill === "parent"&&frameCount%1300===0&&this.age>17&&this.age<44){
+      newBorn(this.race,this.surname,this.x,this.y);
     }
   }
 }
