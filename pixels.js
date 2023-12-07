@@ -8,8 +8,8 @@
 let suffixes = ["ians","ius","sons","dotirs","kin","tyrs"];
 let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre"];
 let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre"];
-let behaviours = ["explorer","cautious","dumb","swimmer","angry"];
-let roles = ["soldier","parent","worker"];
+let traits = ["explorer","cautious","dumb","swimmer","angry","normal","lucky"];
+let form = ["soldier","parent","worker"];
 let races = [];
 let biome;
 let population = [];
@@ -48,22 +48,22 @@ function draw() {
 }
 
 function mousePressed(){
-  newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY);
+  newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY,2);
 }
 
-function newBorn(ethnicity,surname,x,y){
+function newBorn(ethnicity,surname,x,y,size){
   let name = names[Math.floor(random(names.length))]; // new person gets name
   console.log(name + " " + surname);
   if(races.length===0 || random(300)>291||ethnicity==="none"){
     let racename = [surname.concat(suffixes[Math.floor(random(0,6))])]; // new race creation
     races.push(racename);
     races[races.length-1].push(color(random(0,255),random(0,255),random(0,255)));
-    colour = races[races.length-1][1]; // making identifiers for new race
-    population.push(new Bacteria(x,y,racename,name,surname,colour)); // adding new person to the world populus [population.indexOf(racename)]***
+    let colour = races[races.length-1][1]; // making identifiers for new race
+    population.push(new Bacteria(x,y,racename,name,surname,colour,size)); // adding new person to the world populus [population.indexOf(racename)]***
   }
   else{ // new person same race
-    colour = races[races.indexOf(ethnicity)][1];
-    population.push(new Bacteria(x,y,ethnicity,name,surname,colour)); // adding new person to the world populus      population.indexOf(racename)
+    let colour = races[races.indexOf(ethnicity)][1];
+    population.push(new Bacteria(x,y,ethnicity,name,surname,colour,size)); // adding new person to the world populus      population.indexOf(racename)
   }
 }
 
@@ -81,22 +81,26 @@ function displayBact(){
 }
 
 class Bacteria {
-  constructor (x,y,race,title1,title2,colour){
+  constructor (x,y,race,title1,title2,colour,size){
     this.x=x;
     this.y=y;
     this.race=race;
     this.name = concat(title1,title2);
-    this.surname = (title2);
-    this.size = 3;
+    this.surname = title2;
+    this.size = size;
     this.age = 0;
-    this.personality = behaviours[Math.floor(random(0,3.3))]; // deciding movement behaviours
+    this.personality = traits[Math.floor(random(0,3.3))]; // deciding movement behaviours
     this.repeat;
     this.allowed = [1,2,5,6,7,8]; //sand,ground,ice,house,path,apartment
     this.current;
-    this.maxage = Math.floor(random(62,111));
+    this.maxage = Math.floor(random(45,80)); // when they die of old age
     this.rgb = colour;
-    this.skill = roles[Math.floor(random(2))];
-    if(this.skill==="parent"){
+    this.form = form[Math.floor(random(2))]; // role in society
+    this.chance = random(35,69); // likelyhood of performing actions
+    if(this.traits==="lucky"){
+      this.chance = 95;
+    }
+    if(this.form==="parent"){
       console.log("parent");
     }
     if(this.personality === "swimmer"){
@@ -108,11 +112,14 @@ class Bacteria {
     if(frameCount%198 === 0){
       this.age ++;
     }
-    if(this.age>19){
-      this.size = 5;
+    if(this.age>30){
+      this.size = 8;
+    }
+    else if(this.age>19){
+      this.size = 6;
     }
     else if(this.age>8){
-      this.size = 4;
+      this.size = 3;
     }
   }
   stroll(){ // add behaviour, will make different movement deciders later on
@@ -123,10 +130,10 @@ class Bacteria {
     let dy = random(-0.35,0.351);
     // console.log(this.allowed.includes(grid[Math.floor((this.y+dy)/tilesize)][Math.floor((this.x+dx)/tilesize)][3]));
     if(this.allowed.includes(grid[Math.floor((this.y+dy)/tilesize)][Math.floor((this.x+dx)/tilesize)][3])){
-      if((dx<0&&this.x>=dx)||(dx>=0&&this.x<=width-dx)){
+      if(dx<0&&this.x>=dx||dx>=0&&this.x<=width-dx){
         this.x += dx;
       }
-      if((dy>0&&this.y>=dy)||(dy<=0&&this.y<=width-dy)){
+      if(dy>0&&this.y>=dy||dy<=0&&this.y<=width-dy){
         this.y += dy;
       }
     }
@@ -140,8 +147,12 @@ class Bacteria {
     }
   }
   action(){
-    if(this.skill === "parent"&&frameCount%1300===0&&this.age>17&&this.age<44){
-      newBorn(this.race,this.surname,this.x,this.y);
+    if(this.form === "parent"&&frameCount%1300===0&&this.age>26&&this.age<44){
+      this.age = this.age/2;
+      this.size = this.size/2;
+      if(random(100)>=this.chance){
+        newBorn(this.race,this.surname,this.x,this.y,this.size);
+      }
     }
   }
 }
