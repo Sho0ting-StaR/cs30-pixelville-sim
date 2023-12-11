@@ -32,8 +32,8 @@ function draw() {
   displayGrid();
   for(let p = 0; p< population.length;p++){
     population[p].death();
+    population[p].aging();
     if(population[p].living){
-      population[p].aging();
       population[p].stroll();
       population[p].action();
     }
@@ -53,13 +53,14 @@ function mousePressed(){
 
 function newBorn(ethnicity,surname,x,y,size){
   let name = names[Math.floor(random(names.length))]; // new person gets name
+  let lastname = surnames[Math.floor(random(surnames.length))];
   console.log(name + " " + surname);
   if(races.length===0 || random(300)>291||ethnicity==="none"){
     let racename = [surname.concat(suffixes[Math.floor(random(0,6))])]; // new race creation
     races.push(racename);
     races[races.length-1].push(color(random(0,255),random(0,255),random(0,255)));
     let colour = races[races.length-1][1]; // making identifiers for new race
-    population.push(new Bacteria(x,y,racename,name,surname,colour,size)); // adding new person to the world populus [population.indexOf(racename)]***
+    population.push(new Bacteria(x,y,racename,name,lastname,colour,size)); // adding new person to the world populus [population.indexOf(racename)]***
   }
   else{ // new person same race
     let colour = races[races.indexOf(ethnicity)][1];
@@ -80,6 +81,10 @@ function displayBact(){
   }
 }
 
+function build(where,what){//where to build and what its building
+
+}
+
 class Bacteria {
   constructor (x,y,race,title1,title2,colour,size){
     this.x=x;
@@ -95,8 +100,11 @@ class Bacteria {
     this.current;
     this.maxage = Math.floor(random(45,80)); // when they die of old age
     this.rgb = colour;
-    this.form = form[Math.floor(random(2))]; // role in society
+    this.form = form[Math.floor(random(3))]; // role in society
     this.chance = random(35,69); // likelyhood of performing actions
+    if(this.form==="worker"){
+      this.buildables = [1,2,5];
+    }
     if(this.traits==="lucky"){
       this.chance = 95;
     }
@@ -112,7 +120,13 @@ class Bacteria {
     if(frameCount%198 === 0){
       this.age ++;
     }
-    if(this.age>30){
+    if(this.age > this.maxage + 24){
+      this.rgb = color(0,0,0,0);
+    }
+    else if(this.age > this.maxage + 12){
+      this.rgb = color(0,0,0,70);
+    }
+    else if(this.age>30){
       this.size = 8;
     }
     else if(this.age>19){
@@ -147,11 +161,27 @@ class Bacteria {
     }
   }
   action(){
-    if(this.form === "parent"&&frameCount%1300===0&&this.age>26&&this.age<44){
-      this.age = this.age/2;
+    if(this.form === "parent"&&frameCount%1300===0&&this.age>26&&this.age<44){ // split
+      // this.age = this.age/2;
       this.size = this.size/2;
       if(random(100)>=this.chance){
         newBorn(this.race,this.surname,this.x,this.y,this.size);
+      }
+    }
+    else if(this.form === "worker"&&frameCount%300===0&&this.age>4&&this.age<69){ // build
+      // console.log
+      if(random(100)>=this.chance){
+        for(let y = -1; y < 2; y++){
+          for(let x = -1; x < 2; x++){
+            if(!(y === 0&& x ===0)){
+              if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
+                build(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3],6);
+                console.log( "buildable" + " " + grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3]);
+                return true;
+              }
+            }
+          }
+        }
       }
     }
   }
