@@ -77,12 +77,20 @@ function displayBact(){
     else{
       fill(0);
     }
-    rect(population[p].x,population[p].y,population[p].size,population[p].size);
+    if(!(grid[Math.floor(population[p].y/tilesize)][Math.floor(population[p].x/tilesize)][3]===6)){
+      rect(population[p].x,population[p].y,population[p].size,population[p].size);
+    }
+    else{
+      console.log("inside",grid[Math.floor(population[p].y/tilesize)][Math.floor(population[p].x/tilesize)][3]);
+    }
   }
 }
 
-function build(where,what){//where to build and what its building
-
+function build(whereY,whereX,what){//where to build and what its building
+  console.log(whereX,whereY,what);
+  console.log(grid[whereY][whereX]);
+  grid[whereY][whereX][0] = 111;
+  grid[whereY][whereX][3] = what;
 }
 
 class Bacteria {
@@ -161,24 +169,24 @@ class Bacteria {
     }
   }
   action(){
-    if(this.form === "parent"&&frameCount%1300===0&&this.age>26&&this.age<44){ // split
+    if(this.form === "parent"&&frameCount%1300===0&&this.age>26&&this.age<53){ // split
       // this.age = this.age/2;
       this.size = this.size/2;
       if(random(100)>=this.chance){
         newBorn(this.race,this.surname,this.x,this.y,this.size);
       }
     }
-    else if(this.form === "worker"&&frameCount%300===0&&this.age>4&&this.age<69){ // build
+    else if(this.form === "worker"&&frameCount%1600===0&&this.age>18&&this.age<69){ // build
       // console.log
       if(random(100)>=this.chance){
         for(let y = -1; y < 2; y++){
           for(let x = -1; x < 2; x++){
-            if(!(y === 0&& x ===0)){
-              if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
-                build(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3],6);
-                console.log( "buildable" + " " + grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3]);
-                return true;
+            if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
+              build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),6);
+              if(random(100)>39||this.age>47){
+                this.form = "parent";
               }
+              return true;
             }
           }
         }
@@ -227,6 +235,11 @@ function displayGrid(){
           b = 115;
           grid[n][m][3] = 4;
         }
+        else if(grid[n][m][3] === 6){
+          r = 70;
+          g = 40;
+          b = 33;
+        }
       }
       if(biome === 2){ // dessert
         if(grid[n][m][0] < 7){ //water // drawing correct terrain
@@ -259,6 +272,11 @@ function displayGrid(){
           b = 0;
           grid[n][m][3] = 4;
         }
+        else if(grid[n][m][3] === 6){
+          r = 70;
+          g = 40;
+          b = 33;
+        }
       }
       if(biome === 3){ // tundra
         if(grid[n][m][0] < 18){ //water/ice // drawing correct terrain
@@ -284,6 +302,11 @@ function displayGrid(){
           g = 80; 
           b = 80;
           grid[n][m][3] = 4; // stone
+        }
+        else if(grid[n][m][3] === 6){
+          r = 70;
+          g = 40;
+          b = 33;
         }
       }
       if(biome === 4){ // archipelagos
@@ -317,7 +340,14 @@ function displayGrid(){
           b = 148;
           grid[n][m][3] = 4; // stone
         }
+        else if(grid[n][m][3] === 6){
+
+          r = 70;
+          g = 40;
+          b = 33;
+        }
       }
+
       fill(r,g,b);
       rect(m*tilesize,n*tilesize,tilesize,tilesize);
       // fill(255);
