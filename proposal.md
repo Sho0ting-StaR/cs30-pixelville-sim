@@ -9,7 +9,7 @@ my project is a mildly complex simlulation of physical,social and political grow
 - oop coded population ✔
 - population count ✔
 - resource requisits. ҉
-- entering houses. ҉
+- entering houses. ✔
 - full profiles ҉
 - highlight scrolling ҉
 - sound effects ҉

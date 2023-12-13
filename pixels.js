@@ -19,7 +19,9 @@ let tilesize = 30;
 let wScale;
 let winX = 50;
 let winY = 30;
+
 function setup() {
+  rectMode(CENTER);
   biome = Math.floor(random(1,5));
   createCanvas(windowWidth, windowHeight);
   wScale = windowHeight/(tilesize/2);
@@ -150,7 +152,7 @@ class Bacteria {
     }
     let dx = random(-0.35,0.351);
     let dy = random(-0.35,0.351);
-    // console.log(this.allowed.includes(grid[Math.floor((this.y+dy)/tilesize)][Math.floor((this.x+dx)/tilesize)][3]));
+    // if(dy>0&&this.y>=dy||dy<=0&&this.y<=width-dy&&dx<0&&this.x>=dx||dx>=0&&this.x<=width-dx){
     if(this.allowed.includes(grid[Math.floor((this.y+dy)/tilesize)][Math.floor((this.x+dx)/tilesize)][3])){
       if(dx<0&&this.x>=dx||dx>=0&&this.x<=width-dx){
         this.x += dx;
@@ -159,6 +161,7 @@ class Bacteria {
         this.y += dy;
       }
     }
+    // }
   }
   death(){
     if(this.age>this.maxage||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])){ // make ethnic life expectancy variable??
