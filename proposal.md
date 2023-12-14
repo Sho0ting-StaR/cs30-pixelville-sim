@@ -19,3 +19,4 @@ my project is a mildly complex simlulation of physical,social and political grow
 - difficulty toggles ҉
 - combat/rivalries ҉
 - wildlife ҉
+- gamespeed ingame buttons

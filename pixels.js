@@ -4,10 +4,11 @@
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
-
-let suffixes = ["ians","ius","sons","dotirs","kin","tyrs"];
-let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre"];
-let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre"];
+let gSpd = 1;
+let world = 0;
+let suffixes = ["ians","ius","sons","dotirs","kin","tyrs","yivans","etans","ics","itos","ikes"];
+let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre","pure","fuller","hope","fortnite","sigil","bush","boulder"];
+let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre","terry","jeep","karl","gibby","gaston","belle","Brooklynn","fig","hope","fern","twig","pebble"];
 let traits = ["explorer","cautious","dumb","swimmer","angry","normal","lucky"];
 let form = ["soldier","parent","worker"];
 let races = [];
@@ -21,7 +22,7 @@ let winX = 50;
 let winY = 30;
 
 function setup() {
-  rectMode(CENTER);
+  // rectMode(CENTER);
   biome = Math.floor(random(1,5));
   createCanvas(windowWidth, windowHeight);
   wScale = windowHeight/(tilesize/2);
@@ -31,25 +32,33 @@ function setup() {
 }
 
 function draw() {
+  if(frameCount%(198/gSpd)===0){
+    world ++;
+  }
   displayGrid();
   for(let p = 0; p< population.length;p++){
     population[p].death();
     population[p].aging();
-    if(population[p].living){
-      population[p].stroll();
-      population[p].action();
+    if(frameCount%(4/gSpd)===0){
+      if(population[p].living){
+        population[p].stroll();
+        population[p].action();
+      }
     }
   }
   displayBact();
-  if(population.length>0){
+  stroke(0);
+  fill(255);
+  if(population.length>0){ // population count
     text(population.length,15,15);
   }
   else{
     text(0,15,15);
   }
+  text("world age" + " " + world,100,15);
 }
 
-function mousePressed(){
+function mousePressed(){  // creates a brand new person of a ncew race at mouse location
   newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY,2);
 }
 
@@ -127,7 +136,7 @@ class Bacteria {
     this.living = true;
   }
   aging(){ // growing with age and to decide when a bacteria will pass away
-    if(frameCount%198 === 0){
+    if(frameCount%(198/gSpd) === 0){
       this.age ++;
     }
     if(this.age > this.maxage + 24){
@@ -152,12 +161,14 @@ class Bacteria {
     }
     let dx = random(-0.35,0.351);
     let dy = random(-0.35,0.351);
+    let cx = this.x + this.size/2;
+    let cy = this.y + this.size/2;
     // if(dy>0&&this.y>=dy||dy<=0&&this.y<=width-dy&&dx<0&&this.x>=dx||dx>=0&&this.x<=width-dx){
-    if(this.allowed.includes(grid[Math.floor((this.y+dy)/tilesize)][Math.floor((this.x+dx)/tilesize)][3])){
-      if(dx<0&&this.x>=dx||dx>=0&&this.x<=width-dx){
+    if(this.allowed.includes(grid[Math.floor((cy+dy)/tilesize)][Math.floor((cx+dx)/tilesize)][3])){
+      if(dx<0&&cx>=dx||dx>=0&&cx<=width-dx){
         this.x += dx;
       }
-      if(dy>0&&this.y>=dy||dy<=0&&this.y<=width-dy){
+      if(dy>0&&cy>=dy||dy<=0&&cy<=width-dy){
         this.y += dy;
       }
     }
@@ -172,14 +183,14 @@ class Bacteria {
     }
   }
   action(){
-    if(this.form === "parent"&&frameCount%1300===0&&this.age>26&&this.age<53){ // split
+    if(this.form === "parent"&&frameCount%(1300/gSpd)===0&&this.age>26&&this.age<53){ // split
       // this.age = this.age/2;
       this.size = this.size/2;
       if(random(100)>=this.chance){
         newBorn(this.race,this.surname,this.x,this.y,this.size);
       }
     }
-    else if(this.form === "worker"&&frameCount%1600===0&&this.age>18&&this.age<69){ // build
+    else if(this.form === "worker"&&frameCount%(1600/gSpd)===0&&this.age>18&&this.age<69){ // build
       // console.log
       if(random(100)>=this.chance){
         for(let y = -1; y < 2; y++){
