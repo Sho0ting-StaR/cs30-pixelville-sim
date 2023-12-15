@@ -4,7 +4,7 @@
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
-let gSpd = 1;
+let gSpd = 4;
 let world = 0;
 let suffixes = ["ians","ius","sons","dotirs","kin","tyrs","yivans","etans","ics","itos","ikes"];
 let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre","pure","fuller","hope","fortnite","sigil","bush","boulder"];
@@ -81,9 +81,8 @@ function newBorn(ethnicity,surname,x,y,size){
 
 function displayBact(){
   for(let p = 0; p< population.length;p++){
-    // console.log(population[p].race[1]);
     if(population[p].living===true){
-      fill(population[p].rgb); // fixxxxx thissss **********
+      fill(population[p].rgb);
     }
     else{
       fill(0);
@@ -145,14 +144,10 @@ class Bacteria {
     else if(this.age > this.maxage + 12){
       this.rgb = color(0,0,0,70);
     }
-    else if(this.age>30){
-      this.size = 8;
-    }
-    else if(this.age>19){
-      this.size = 6;
-    }
-    else if(this.age>8){
-      this.size = 3;
+    else if(this.size<8){
+      if(frameCount%(792/gSpd)===0){
+        this.size++;
+      }
     }
   }
   stroll(){ // add behaviour, will make different movement deciders later on
@@ -183,8 +178,7 @@ class Bacteria {
     }
   }
   action(){
-    if(this.form === "parent"&&frameCount%(1300/gSpd)===0&&this.age>26&&this.age<53){ // split
-      // this.age = this.age/2;
+    if(this.form === "parent"&&frameCount%(1300/gSpd)===0&&this.age>26&&this.age<53&&this.size>=4){ // split
       this.size = this.size/2;
       if(random(100)>=this.chance){
         newBorn(this.race,this.surname,this.x,this.y,this.size);
@@ -213,16 +207,26 @@ function displayGrid(){
   let r;
   let g;
   let b;
+  let water; // testing water sparkle speed
   for(let n =0; n< grid.length;n++){
     for(let m =0;m < grid[n].length;m++){
+      let store;
       noStroke();
       fill(190);
       // text(grid[n][m][2],m*tilesize,n*tilesize); // terrain type
       if(biome === 1){ // forest
+        
         if(grid[n][m][0] < 22){ //water // drawing correct terrain
-          r = 40; 
-          g = 80; 
-          b= random(100,131);
+          r = 40;
+          g = 80;
+          b = 112;
+          water = [structuredClone(r),structuredClone(g),structuredClone(b)];
+          if(frameCount%(8/gSpd)===0){ // speed of water movement
+            water[2]= random(100,131);
+          }
+          r = water[0];
+          g = water[1];
+          b = water[2];
           grid[n][m][3] = 0;
         }
         else if(grid[n][m][0] <31){ // beach/sand
@@ -361,12 +365,8 @@ function displayGrid(){
           b = 33;
         }
       }
-
       fill(r,g,b);
       rect(m*tilesize,n*tilesize,tilesize,tilesize);
-      // fill(255);
-      // text(grid[n][m][2],m*tilesize,n*tilesize);
-
     }
   }
 }
