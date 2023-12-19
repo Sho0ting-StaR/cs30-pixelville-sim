@@ -6,6 +6,7 @@
 // - describe what you did to take this project "above and beyond"
 let gSpd = 4;
 let world = 0;
+let politico = false;
 let suffixes = ["ians","ius","sons","dotirs","kin","tyrs","yivans","etans","ics","itos","ikes"];
 let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre","pure","fuller","hope","fortnite","sigil","bush","boulder"];
 let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre","terry","jeep","karl","gibby","gaston","belle","Brooklynn","fig","hope","fern","twig","pebble"];
@@ -36,13 +37,18 @@ function draw() {
     world ++;
   }
   displayGrid();
-  for(let p = 0; p< population.length;p++){
-    population[p].death();
-    population[p].aging();
-    if(frameCount%(4/gSpd)===0){
-      if(population[p].living){
-        population[p].stroll();
-        population[p].action();
+  for(let p = 0; 0< population.length-p;p++){
+    if(population[p].age>population[p].maxage+24){
+      population.splice(p,1);
+    }
+    else{
+      population[p].death();
+      population[p].aging();
+      if(frameCount%(4/gSpd)===0){
+        if(population[p].living){
+          population[p].stroll();
+          population[p].action();
+        }
       }
     }
   }
