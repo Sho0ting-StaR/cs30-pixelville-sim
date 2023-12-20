@@ -352,7 +352,7 @@ function displayGrid(){
         }
       }
       if(grid[n][m][3]===6){
-        fill(190,80,50);
+        fill(190,80,50); // houses *** consider a second iteration after initial build to place houses on top of the grid.
         rect(m*tilesize,n*tilesize,tilesize,tilesize);
         fill(70,40,33);
         rect(tilesize/4 + m*tilesize,tilesize/4 + n*tilesize,tilesize/2,tilesize/2);
