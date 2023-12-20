@@ -37,17 +37,18 @@ function draw() {
     world ++;
   }
   displayGrid();
-  for(let p = 0; 0< population.length-p;p++){
-    if(population[p].age>population[p].maxage+24){
-      population.splice(p,1);
+  for(let p = 0; p< population.length;p++){
+    let n = population.length-p-1;
+    if(population[n].age>population[n].maxage+24){
+      population.splice(n,1);
     }
     else{
-      population[p].death();
-      population[p].aging();
+      population[n].death();
+      population[n].aging();
       if(frameCount%(4/gSpd)===0){
-        if(population[p].living){
-          population[p].stroll();
-          population[p].action();
+        if(population[n].living){
+          population[n].stroll();
+          population[n].action();
         }
       }
     }
@@ -105,7 +106,7 @@ function displayBact(){
 function build(whereY,whereX,what){//where to build and what its building
   console.log(whereX,whereY,what);
   console.log(grid[whereY][whereX]);
-  grid[whereY][whereX][0] = 111;
+  // grid[whereY][whereX][0] = 111;
   grid[whereY][whereX][3] = what;
 }
 
@@ -216,7 +217,6 @@ function displayGrid(){
   let water; // testing water sparkle speed
   for(let n =0; n< grid.length;n++){
     for(let m =0;m < grid[n].length;m++){
-      let store;
       noStroke();
       fill(190);
       // text(grid[n][m][2],m*tilesize,n*tilesize); // terrain type
@@ -259,11 +259,6 @@ function displayGrid(){
           b = 115;
           grid[n][m][3] = 4;
         }
-        else if(grid[n][m][3] === 6){
-          r = 70;
-          g = 40;
-          b = 33;
-        }
       }
       if(biome === 2){ // dessert
         if(grid[n][m][0] < 7){ //water // drawing correct terrain
@@ -296,11 +291,6 @@ function displayGrid(){
           b = 0;
           grid[n][m][3] = 4;
         }
-        else if(grid[n][m][3] === 6){
-          r = 70;
-          g = 40;
-          b = 33;
-        }
       }
       if(biome === 3){ // tundra
         if(grid[n][m][0] < 18){ //water/ice // drawing correct terrain
@@ -327,11 +317,7 @@ function displayGrid(){
           b = 80;
           grid[n][m][3] = 4; // stone
         }
-        else if(grid[n][m][3] === 6){
-          r = 70;
-          g = 40;
-          b = 33;
-        }
+
       }
       if(biome === 4){ // archipelagos
         if(grid[n][m][0] < 50){ //water // drawing correct terrain
@@ -364,15 +350,17 @@ function displayGrid(){
           b = 148;
           grid[n][m][3] = 4; // stone
         }
-        else if(grid[n][m][3] === 6){
-
-          r = 70;
-          g = 40;
-          b = 33;
-        }
       }
-      fill(r,g,b);
-      rect(m*tilesize,n*tilesize,tilesize,tilesize);
+      if(grid[n][m][3]===6){
+        fill(190,80,50);
+        rect(m*tilesize,n*tilesize,tilesize,tilesize);
+        fill(70,40,33);
+        rect(tilesize/4 + m*tilesize,tilesize/4 + n*tilesize,tilesize/2,tilesize/2);
+      }
+      else{
+        fill(r,g,b);
+        rect(m*tilesize,n*tilesize,tilesize,tilesize);
+      }
     }
   }
 }
