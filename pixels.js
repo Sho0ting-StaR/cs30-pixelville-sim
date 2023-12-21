@@ -82,7 +82,7 @@ function newBorn(ethnicity,surname,x,y,size){
   }
   else{ // new person same race
     let colour = races[races.indexOf(ethnicity)][1];
-    population.push(new Bacteria(x,y,ethnicity,name,surname,colour,size)); // adding new person to the world populus      population.indexOf(racename)
+    population.push(new Bacteria(x,y,ethnicity,name,surname,colour,size)); // adding new person to the world populus  population.indexOf(racename)
   }
 }
 
@@ -94,20 +94,21 @@ function displayBact(){
     else{
       fill(0);
     }
-    if(!(grid[Math.floor(population[p].y/tilesize)][Math.floor(population[p].x/tilesize)][3]===6)){
-      rect(population[p].x,population[p].y,population[p].size,population[p].size);
+    let spot= Math.floor(population[p].y/tilesize);
+    let spot2 = Math.floor(population[p].x/tilesize);
+    if(grid[Math.floor(population[p].y/tilesize)][Math.floor(population[p].x/tilesize)][4]===6){
+      if(population[p].x>spot2+tilesize/4&&population[p].x<spot2+3*tilesize/4&&population[p].y>spot+tilesize/4&&population[p].y<spot+3*tilesize/4){
+        // console.log("inside",grid[Math.floor(population[p].y/tilesize)][Math.floor(population[p].x/tilesize)][3]);
+      }
     }
     else{
-      console.log("inside",grid[Math.floor(population[p].y/tilesize)][Math.floor(population[p].x/tilesize)][3]);
+      rect(population[p].x,population[p].y,population[p].size,population[p].size);
     }
   }
 }
 
 function build(whereY,whereX,what){//where to build and what its building
-  console.log(whereX,whereY,what);
-  console.log(grid[whereY][whereX]);
-  // grid[whereY][whereX][0] = 111;
-  grid[whereY][whereX][3] = what;
+  grid[whereY][whereX][4] = what;
 }
 
 class Bacteria {
@@ -115,13 +116,13 @@ class Bacteria {
     this.x=x;
     this.y=y;
     this.race=race;
-    this.name = concat(title1,title2);
+    this.name = concat(title1," ",title2);
     this.surname = title2;
     this.size = size;
     this.age = 0;
     this.personality = traits[Math.floor(random(0,3.3))]; // deciding movement behaviours
     this.repeat;
-    this.allowed = [1,2,5,6,7,8]; //sand,ground,ice,house,path,apartment
+    this.allowed = [1,2,5,7,8]; //sand,ground,ice,house,path,apartment
     this.current;
     this.maxage = Math.floor(random(45,80)); // when they die of old age
     this.rgb = colour;
@@ -132,6 +133,9 @@ class Bacteria {
     }
     if(this.traits==="lucky"){
       this.chance = 95;
+    }
+    if(this.traits==="cautious"){
+      this.allowed.push(6);
     }
     if(this.form==="parent"){
       console.log("parent");
@@ -166,7 +170,7 @@ class Bacteria {
     let cx = this.x + this.size/2;
     let cy = this.y + this.size/2;
     // if(dy>0&&this.y>=dy||dy<=0&&this.y<=width-dy&&dx<0&&this.x>=dx||dx>=0&&this.x<=width-dx){
-    if(this.allowed.includes(grid[Math.floor((cy+dy)/tilesize)][Math.floor((cx+dx)/tilesize)][3])){
+    if(this.allowed.includes(grid[Math.floor((cy+dy)/tilesize)][Math.floor((cx+dx)/tilesize)][3])){//&&this.allowed.includes(grid[Math.floor((cy+dy)/tilesize)][Math.floor((cx+dx)/tilesize)][4]))){
       if(dx<0&&cx>=dx||dx>=0&&cx<=width-dx){
         this.x += dx;
       }
@@ -177,8 +181,12 @@ class Bacteria {
     // }
   }
   death(){
+    // if(!this.allowed.includes(6)&&grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][4]===6){
+    // this.allowed.push(6);
+    // }
     if(this.age>this.maxage||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])){ // make ethnic life expectancy variable??
       this.living = false;
+      console.log(this.name + " has died at " + this.age + " :(");
       let scale = this.size;
       this.age=100;
       this.size = scale;
@@ -189,15 +197,16 @@ class Bacteria {
       this.size = this.size/2;
       if(random(100)>=this.chance){
         newBorn(this.race,this.surname,this.x,this.y,this.size);
+        console.log(this.name + " had a kid!");
       }
     }
     else if(this.form === "worker"&&frameCount%(1600/gSpd)===0&&this.age>18&&this.age<69){ // build
-      // console.log
       if(random(100)>=this.chance){
         for(let y = -1; y < 2; y++){
           for(let x = -1; x < 2; x++){
             if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
               build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),6);
+              console.log(this.name + " has built a house!");
               if(random(100)>39||this.age>47){
                 this.form = "parent";
               }
@@ -351,16 +360,12 @@ function displayGrid(){
           grid[n][m][3] = 4; // stone
         }
       }
-      if(grid[n][m][3]===6){
-        fill(190,80,50); // houses *** consider a second iteration after initial build to place houses on top of the grid.
-        rect(m*tilesize,n*tilesize,tilesize,tilesize);
+      fill(r,g,b);
+      rect(m*tilesize,n*tilesize,tilesize,tilesize);   
+      if(grid[n][m][4]===6){
         fill(70,40,33);
         rect(tilesize/4 + m*tilesize,tilesize/4 + n*tilesize,tilesize/2,tilesize/2);
-      }
-      else{
-        fill(r,g,b);
-        rect(m*tilesize,n*tilesize,tilesize,tilesize);
-      }
+      }   
     }
   }
 }
@@ -409,7 +414,7 @@ function createGrid(numx,numy) {
     grid.push([]);
     for(let m =0;m<numx;m++){
       if(random(100)>97){
-        grid[n].push(tileGenerate(m,n,true));
+        grid[n].push(tileGenerate(m,n,true)); // heightmapping
       }
       else{
         grid[n].push(tileGenerate(m,n,false));
@@ -432,5 +437,6 @@ function tileGenerate(m,n,peak) {
   else{
     array.push(0);
   }
+  array.push(2);
   return array;
 }
