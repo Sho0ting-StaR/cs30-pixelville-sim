@@ -9,7 +9,7 @@ let world = 0;
 let politico = false;
 let suffixes = ["ians","ius","sons","dotirs","kin","tyrs","yivans","etans","ics","itos","ikes"];
 let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre","pure","fuller","hope","fortnite","sigil","bush","boulder"];
-let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre","terry","jeep","karl","gibby","gaston","belle","Brooklynn","fig","hope","fern","twig","pebble"];
+let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre","terry","jeep","karl","gibby","gaston","belle","Brooklynn","fig","hope","fern","twig","pebble","blessing","joy","dove","sabrina","marty","monty","moon","happy","willow","tom"];
 let traits = ["explorer","cautious","dumb","swimmer","angry","normal","lucky"];
 let form = ["soldier","parent","worker"];
 let races = [];
@@ -66,13 +66,12 @@ function draw() {
 }
 
 function mousePressed(){  // creates a brand new person of a ncew race at mouse location
-  newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY,2);
+  console.log("welcome " + newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY,2)+ "!");
 }
 
 function newBorn(ethnicity,surname,x,y,size){
   let name = names[Math.floor(random(names.length))]; // new person gets name
   let lastname = surnames[Math.floor(random(surnames.length))];
-  console.log(name + " " + surname);
   if(races.length===0 || random(300)>291||ethnicity==="none"){
     let racename = [surname.concat(suffixes[Math.floor(random(0,6))])]; // new race creation
     races.push(racename);
@@ -84,6 +83,7 @@ function newBorn(ethnicity,surname,x,y,size){
     let colour = races[races.indexOf(ethnicity)][1];
     population.push(new Bacteria(x,y,ethnicity,name,surname,colour,size)); // adding new person to the world populus  population.indexOf(racename)
   }
+  return name + " " + surname;
 }
 
 function displayBact(){
@@ -136,9 +136,6 @@ class Bacteria {
     }
     if(this.traits==="cautious"){
       this.allowed.push(6);
-    }
-    if(this.form==="parent"){
-      console.log("parent");
     }
     if(this.personality === "swimmer"){
       this.allowed.push(0);
@@ -196,8 +193,8 @@ class Bacteria {
     if(this.form === "parent"&&frameCount%(1300/gSpd)===0&&this.age>26&&this.age<53&&this.size>=4){ // split
       this.size = this.size/2;
       if(random(100)>=this.chance){
-        newBorn(this.race,this.surname,this.x,this.y,this.size);
         console.log(this.name + " had a kid!");
+        console.log("welcome " + newBorn(this.race,this.surname,this.x,this.y,this.size)+ "!");
       }
     }
     else if(this.form === "worker"&&frameCount%(1600/gSpd)===0&&this.age>18&&this.age<69){ // build
