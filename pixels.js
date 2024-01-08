@@ -1,5 +1,5 @@
-// Project Title
-// Your Name
+// Pixelville
+// Nic or Starr
 // Date
 //
 // Extra for Experts:
@@ -21,9 +21,11 @@ let tilesize = 30;
 let wScale;
 let winX = 50;
 let winY = 30;
+let news = "Hello world!";
+let historyLog = false;
+let wHistory = [];
 
 function setup() {
-  // rectMode(CENTER);
   biome = Math.floor(random(1,5));
   createCanvas(windowWidth, windowHeight);
   wScale = windowHeight/(tilesize/2);
@@ -33,6 +35,9 @@ function setup() {
 }
 
 function draw() {
+  if(keyIsDown(76)){
+    historyLog = !historyLog;
+  }
   if(frameCount%(198/gSpd)===0){
     world ++;
   }
@@ -63,10 +68,15 @@ function draw() {
     text(0,15,15);
   }
   text("world age" + " " + world,100,15);
+  if(historyLog){
+    fill(40);
+    rect(0,height-100,width,100);
+    broadcast(news);
+  }
 }
 
 function mousePressed(){  // creates a brand new person of a ncew race at mouse location
-  console.log("welcome " + newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY,2)+ "!");
+  broadcast("welcome " + newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY,2)+ "!");
 }
 
 function newBorn(ethnicity,surname,x,y,size){
@@ -127,7 +137,7 @@ class Bacteria {
     this.maxage = Math.floor(random(45,80)); // when they die of old age
     this.rgb = colour;
     this.form = form[Math.floor(random(3))]; // role in society
-    this.chance = random(35,69); // likelyhood of performing actions
+    this.chance = random(35,69); // likelihood of performing actions
     if(this.form==="worker"){
       this.buildables = [1,2,5];
     }
@@ -181,9 +191,9 @@ class Bacteria {
     // if(!this.allowed.includes(6)&&grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][4]===6){
     // this.allowed.push(6);
     // }
-    if(this.age>this.maxage||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])){ // make ethnic life expectancy variable??
+    if(this.age>this.maxage||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])){
       this.living = false;
-      console.log(this.name + " has died at " + this.age + " :(");
+      broadcast(this.name + " has died at " + this.age + " :(");
       let scale = this.size;
       this.age=100;
       this.size = scale;
@@ -193,8 +203,8 @@ class Bacteria {
     if(this.form === "parent"&&frameCount%(1300/gSpd)===0&&this.age>26&&this.age<53&&this.size>=4){ // split
       this.size = this.size/2;
       if(random(100)>=this.chance){
-        console.log(this.name + " had a kid!");
-        console.log("welcome " + newBorn(this.race,this.surname,this.x,this.y,this.size)+ "!");
+        broadcast(this.name + " had a kid!");
+        broadcast("welcome " + newBorn(this.race,this.surname,this.x,this.y,this.size)+ "!");
       }
     }
     else if(this.form === "worker"&&frameCount%(1600/gSpd)===0&&this.age>18&&this.age<69){ // build
@@ -203,7 +213,7 @@ class Bacteria {
           for(let x = -1; x < 2; x++){
             if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
               build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),6);
-              console.log(this.name + " has built a house!");
+              broadcast(this.name + " has built a house!");
               if(random(100)>39||this.age>47){
                 this.form = "parent";
               }
@@ -216,6 +226,16 @@ class Bacteria {
   }
 }
 
+function broadcast(message){
+  if(news !== message){
+    wHistory.push(message);
+  }
+  news = message;
+  fill(255);
+  for(let h of wHistory){ // fix full logging system here
+    text(wHistory[wHistory.length-1], 30, height-80);
+  }
+}
 function displayGrid(){
   let r;
   let g;
