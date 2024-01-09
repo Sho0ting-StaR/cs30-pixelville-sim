@@ -22,8 +22,9 @@ let wScale;
 let winX = 50;
 let winY = 30;
 let news = "Hello world!";
-let historyLog = false;
+let historyLog = true;
 let wHistory = [];
+let scrolled = 0;
 
 function setup() {
   biome = Math.floor(random(1,5));
@@ -67,16 +68,47 @@ function draw() {
   else{
     text(0,15,15);
   }
-  text("world age" + " " + world,100,15);
+  text("world age" + " " + world,100,15); // simulation run time
   if(historyLog){
+    if(frameCount%3===0){
+      if(keyIsDown(40)){
+        if(wHistory.length-scrolled-1 >= 0){ // scrolling the history logs down
+          scrolled --;
+        }
+      }
+      else if(keyIsDown(38)&&scrolled<0){ // scroll up
+        scrolled ++;
+      }
+    }
+    // HUD display
     fill(40);
     rect(0,height-100,width,100);
+    fill(65);
+    rect(width-225,height-70,50,50);
     broadcast(news);
+    fill(255);
+    for(let h = 1; h<= wHistory.length;h++){ // fix full logging system here
+      text(wHistory[wHistory.length-h+scrolled], 20, height-80+(h-1)*20);
+    }
+    text("L to exit",width-100,height-80);
+    text("gamespeed " +gSpd + "x",width-250,height-80);
   }
 }
 
-function mousePressed(){  // creates a brand new person of a ncew race at mouse location
-  broadcast("welcome " + newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY,2)+ "!");
+function mouseClicked(){  // creates a brand new person of a ncew race at mouse location
+  if(historyLog &&mouseY >= height-100){
+    if(mouseX >= width-225&& mouseX<= width-175){
+      if(gSpd===4){
+        gSpd = 1;
+      }
+      else{
+        gSpd++;
+      }
+    }
+  }
+  else{
+    broadcast("welcome " + newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY,2)+ "!");
+  }
 }
 
 function newBorn(ethnicity,surname,x,y,size){
@@ -191,12 +223,14 @@ class Bacteria {
     // if(!this.allowed.includes(6)&&grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][4]===6){
     // this.allowed.push(6);
     // }
-    if(this.age>this.maxage||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])){
-      this.living = false;
-      broadcast(this.name + " has died at " + this.age + " :(");
-      let scale = this.size;
-      this.age=100;
-      this.size = scale;
+    if(this.living){
+      if(this.age>this.maxage||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])){
+        this.living = false;
+        broadcast(this.name + " has died at " + this.age + " :(");
+        let scale = this.size;
+        this.age=100;
+        this.size = scale;
+      }
     }
   }
   action(){
@@ -228,14 +262,11 @@ class Bacteria {
 
 function broadcast(message){
   if(news !== message){
-    wHistory.push(message);
+    wHistory.push(world + "   " + message);
   }
   news = message;
-  fill(255);
-  for(let h of wHistory){ // fix full logging system here
-    text(wHistory[wHistory.length-1], 30, height-80);
-  }
 }
+
 function displayGrid(){
   let r;
   let g;
