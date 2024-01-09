@@ -98,7 +98,7 @@ function draw() {
 function mouseClicked(){  // creates a brand new person of a ncew race at mouse location
   if(historyLog &&mouseY >= height-100){
     if(mouseX >= width-225&& mouseX<= width-175){
-      if(gSpd===4){
+      if(gSpd===4){ // game speed changer
         gSpd = 1;
       }
       else{
