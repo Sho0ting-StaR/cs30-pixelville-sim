@@ -7,9 +7,10 @@
 let gSpd = 4;
 let world = 0;
 let politico = false;
-let suffixes = ["ians","ius","sons","dotirs","kin","tyrs","yivans","etans","ics","itos","ikes"];
-let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre","pure","fuller","hope","fortnite","sigil","bush","boulder"];
-let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre","terry","jeep","karl","gibby","gaston","belle","Brooklynn","fig","hope","fern","twig","pebble","blessing","joy","dove","sabrina","marty","monty","moon","happy","willow","tom"];
+let dms = ["left this world","ascended","did a woopsie","perished","faced their demise","reached the end","ran into a wall.. hard","died","left early","took their leave", "made their final escape"];
+let suffixes = ["ians","ius","sons","dotirs","kin","tyrs","yivans","etans","ics","itos","ikes","jins","kidds","steels","qis","yuks","chuks"];
+let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre","pure","fuller","hope","fortnite","sigil","bush","boulder","bird","dove","steele","jasper","rouge"];
+let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre","terry","jeep","karl","gibby","gaston","belle","Brooklynn","fig","hope","fern","twig","pebble","blessing","joy","dove","sabrina","marty","monty","moon","happy","willow","tom","jasper","wren","bird","crumb"];
 let traits = ["explorer","cautious","dumb","swimmer","angry","normal","lucky"];
 let form = ["soldier","parent","worker"];
 let races = [];
@@ -25,6 +26,8 @@ let news = "Hello world!";
 let historyLog = true;
 let wHistory = [];
 let scrolled = 0;
+let scrolled2 = 0;
+let miniMenu = 0;
 
 function setup() {
   biome = Math.floor(random(1,5));
@@ -70,14 +73,34 @@ function draw() {
   }
   text("world age" + " " + world,100,15); // simulation run time
   if(historyLog){
-    if(frameCount%3===0){
-      if(keyIsDown(40)){
-        if(wHistory.length-scrolled-1 >= 0){ // scrolling the history logs down
-          scrolled --;
+    if(frameCount %6 === 0){
+      if(keyIsDown(37)){
+        if(miniMenu> 0){ // scrolling the history logs down
+          miniMenu --;
         }
       }
-      else if(keyIsDown(38)&&scrolled<0){ // scroll up
-        scrolled ++;
+      else if(keyIsDown(39)&&miniMenu<1){ // scroll up
+        miniMenu ++;
+      }
+      if(miniMenu === 0){ // add a left right arrow option to switch between scroll menus******
+        if(keyIsDown(40)){
+          if(wHistory.length-scrolled-1 >= 0){ // scrolling the history logs down
+            scrolled --;
+          }
+        }
+        else if(keyIsDown(38)&&scrolled<0){ // scroll up
+          scrolled ++;
+        }
+      }
+      else if(miniMenu === 1){
+        if(keyIsDown(40)){
+          if(races.length-scrolled2-1 >= 0){ // scrolling the races log down
+            scrolled2 --;
+          }
+        }
+        else if(keyIsDown(38)&&scrolled2<0){ // scroll up
+          scrolled2 ++;
+        }
       }
     }
     // HUD display
@@ -88,7 +111,15 @@ function draw() {
     broadcast(news);
     fill(255);
     for(let h = 1; h<= wHistory.length;h++){ // fix full logging system here
-      text(wHistory[wHistory.length-h+scrolled], 20, height-80+(h-1)*20);
+      text(wHistory[wHistory.length-h+scrolled], 10, height-80+(h-1)*20);
+    }
+    for(let r = 1; r<= races.length;r++){
+      if(!(races.length-r+scrolled2<0)){
+        text(races[races.length-r+scrolled2][0], 320, height-80+(r-1)*20);
+        fill(races[races.length-r+scrolled2][1],races[races.length-r+scrolled2][2],races[races.length-r+scrolled2][3]);
+        rect(300,(height-80+(r-1)*20)-10,10,10);
+        fill(255);
+      }
     }
     text("L to exit",width-100,height-80);
     text("gamespeed " +gSpd + "x",width-250,height-80);
@@ -115,7 +146,7 @@ function newBorn(ethnicity,surname,x,y,size){
   let name = names[Math.floor(random(names.length))]; // new person gets name
   let lastname = surnames[Math.floor(random(surnames.length))];
   if(races.length===0 || random(300)>291||ethnicity==="none"){
-    let racename = [surname.concat(suffixes[Math.floor(random(0,6))])]; // new race creation
+    let racename = [surname.concat(suffixes[Math.floor(random(suffixes.length))])]; // new race creation
     races.push(racename);
     races[races.length-1].push(color(random(0,255),random(0,255),random(0,255)));
     let colour = races[races.length-1][1]; // making identifiers for new race
@@ -158,7 +189,7 @@ class Bacteria {
     this.x=x;
     this.y=y;
     this.race=race;
-    this.name = concat(title1," ",title2);
+    this.name = title1;
     this.surname = title2;
     this.size = size;
     this.age = 0;
@@ -208,7 +239,6 @@ class Bacteria {
     let dy = random(-0.35,0.351);
     let cx = this.x + this.size/2;
     let cy = this.y + this.size/2;
-    // if(dy>0&&this.y>=dy||dy<=0&&this.y<=width-dy&&dx<0&&this.x>=dx||dx>=0&&this.x<=width-dx){
     if(this.allowed.includes(grid[Math.floor((cy+dy)/tilesize)][Math.floor((cx+dx)/tilesize)][3])){//&&this.allowed.includes(grid[Math.floor((cy+dy)/tilesize)][Math.floor((cx+dx)/tilesize)][4]))){
       if(dx<0&&cx>=dx||dx>=0&&cx<=width-dx){
         this.x += dx;
@@ -217,16 +247,12 @@ class Bacteria {
         this.y += dy;
       }
     }
-    // }
   }
   death(){
-    // if(!this.allowed.includes(6)&&grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][4]===6){
-    // this.allowed.push(6);
-    // }
     if(this.living){
       if(this.age>this.maxage||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])){
         this.living = false;
-        broadcast(this.name + " has died at " + this.age + " :(");
+        broadcast(this.name + " " + this.surname +" " + dms[Math.floor(random(dms.length))] +" at " + this.age);
         let scale = this.size;
         this.age=100;
         this.size = scale;
@@ -237,7 +263,7 @@ class Bacteria {
     if(this.form === "parent"&&frameCount%(1300/gSpd)===0&&this.age>26&&this.age<53&&this.size>=4){ // split
       this.size = this.size/2;
       if(random(100)>=this.chance){
-        broadcast(this.name + " had a kid!");
+        broadcast(this.name + " " + this.surname + " had a kid!");
         broadcast("welcome " + newBorn(this.race,this.surname,this.x,this.y,this.size)+ "!");
       }
     }
@@ -247,7 +273,7 @@ class Bacteria {
           for(let x = -1; x < 2; x++){
             if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
               build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),6);
-              broadcast(this.name + " has built a house!");
+              broadcast(this.name + " " + this.surname + " has built a house!");
               if(random(100)>39||this.age>47){
                 this.form = "parent";
               }
