@@ -27,6 +27,7 @@ let historyLog = true;
 let wHistory = [];
 let scrolled = 0;
 let scrolled2 = 0;
+let scrolled3 = 0;
 let miniMenu = 0;
 
 function setup() {
@@ -79,7 +80,7 @@ function draw() {
           miniMenu --;
         }
       }
-      else if(keyIsDown(39)&&miniMenu<1){ // scroll up
+      else if(keyIsDown(39)&&miniMenu<2){ // scroll up
         miniMenu ++;
       }
       if(miniMenu === 0){ // add a left right arrow option to switch between scroll menus******
@@ -102,6 +103,16 @@ function draw() {
           scrolled2 ++;
         }
       }
+      else if(miniMenu === 2){
+        if(keyIsDown(40)){
+          if(population.length-scrolled3-1 >= 0){ // scrolling the races log down
+            scrolled3 --;
+          }
+        }
+        else if(keyIsDown(38)&&scrolled3<0){ // scroll up
+          scrolled3 ++;
+        }
+      }
     }
     // HUD display
     fill(40);
@@ -109,15 +120,35 @@ function draw() {
     fill(65);
     rect(width-225,height-70,50,50);
     broadcast(news);
+    if(miniMenu === 0){
+      fill(70);
+      rect(0,height-100,250,100);
+    }
+    else if(miniMenu === 1){
+      fill(70);
+      rect(250,height-100,200,100);
+    }
+    else if(miniMenu === 2){
+      fill(70);
+      rect(450,height-100,600,100);
+    }
     fill(255);
-    for(let h = 1; h<= wHistory.length;h++){ // fix full logging system here
+    for(let h = 1; h<= wHistory.length;h++){
       text(wHistory[wHistory.length-h+scrolled], 10, height-80+(h-1)*20);
     }
     for(let r = 1; r<= races.length;r++){
       if(!(races.length-r+scrolled2<0)){
         text(races[races.length-r+scrolled2][0], 320, height-80+(r-1)*20);
         fill(races[races.length-r+scrolled2][1],races[races.length-r+scrolled2][2],races[races.length-r+scrolled2][3]);
-        rect(300,(height-80+(r-1)*20)-10,10,10);
+        rect(300,height-80+(r-1)*20-10,10,10);
+        fill(255);
+      }
+    }
+    for(let p = 1; p<= population.length;p++){  // fix full logging system here
+      if(!(population.length-p+scrolled3<0)){
+        text(population[population.length-p+scrolled3].name + " " + population[population.length-p+scrolled3].surname, 500, height-80+(p-1)*20);
+        fill(population[population.length-p+scrolled3].rgb);
+        rect(480,height-80+(p-1)*20-10,10,10);
         fill(255);
       }
     }
