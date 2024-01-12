@@ -10,8 +10,8 @@ my project is a mildly complex simlulation of physical,social and political grow
 - population count ✔
 - resource requisits. ҉
 - entering houses. ✔
-- full profiles ҉
-- highlight scrolling ҉
+- full profiles ✔
+- highlight scrolling ✔
 - sound effects ҉
 - background music ҉
 ## nice to have list
