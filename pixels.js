@@ -41,10 +41,10 @@ function setup() {
 }
 
 function draw() {
-  if(keyIsDown(76)){
+  if(keyIsDown(76)&&frameCount%10===0){
     historyLog = !historyLog;
   }
-  if(keyIsDown(80)){
+  if(keyIsDown(80)&&frameCount%10===0){
     poliMap = !poliMap;
   }
   if(frameCount%(198/gSpd)===0){
@@ -120,63 +120,64 @@ function draw() {
     }
     // HUD display
     fill(40);
-    rect(0,height-100,width,100);
-    fill(65);
-    rect(width-225,height-70,50,50);
+    rect(0,height-120,width,120);
     broadcast(news);
     if(miniMenu === 0){
       fill(70);
-      rect(0,height-100,250,100);
+      rect(0,height-120,250,120);
     }
     else if(miniMenu === 1){
       fill(70);
-      rect(250,height-100,200,100);
+      rect(250,height-120,200,120);
     }
     else if(miniMenu === 2){
       fill(70);
-      rect(450,height-100,600,100);
+      rect(450,height-120,600,120);
     }
     fill(255);
     for(let h = 1; h<= wHistory.length;h++){
-      text(wHistory[wHistory.length-h+scrolled], 10, height-80+(h-1)*20);
+      text(wHistory[wHistory.length-h+scrolled], 10, height-100+(h-1)*20);
     }
     for(let r = 1; r<= races.length;r++){
       if(!(races.length-r+scrolled2<0)){
-        text(races[races.length-r+scrolled2][0], 320, height-80+(r-1)*20);
+        text(races[races.length-r+scrolled2][0], 320, height-100+(r-1)*20);
         fill(races[races.length-r+scrolled2][1],races[races.length-r+scrolled2][2],races[races.length-r+scrolled2][3]);
-        rect(300,height-80+(r-1)*20-10,10,10);
+        rect(300,height-100+(r-1)*20-10,10,10);
         fill(255);
       }
     }
     for(let p = 1; p<= population.length;p++){  // fix full logging system here
       if(!(population.length-p+scrolled3<0)){
-        text(population[population.length-p+scrolled3].name + " " + population[population.length-p+scrolled3].surname, 500, height-80+(p-1)*20);
+        text(population[population.length-p+scrolled3].name + " " + population[population.length-p+scrolled3].surname, 500, height-100+(p-1)*20);
         fill(population[population.length-p+scrolled3].rgb);
-        rect(480,height-80+(p-1)*20-10,10,10);
+        rect(480,height-100+(p-1)*20-10,10,10);
         fill(255);
       }
     }
     if(population.length>0&&population.length+scrolled3>0){
-    text(population[population.length-1+scrolled3].name + ' ' + population[population.length-1+scrolled3].surname,640,height-80);
-    text("age" + " " + population[population.length-1+scrolled3].age,620,height-40);
-    text(population[population.length-1+scrolled3].form,620,height-60);
-    text(population[population.length-1+scrolled3].personality,660,height-60);
-    text(population[population.length-1+scrolled3].race[0],660,height-40);
-    text("size " + population[population.length-1+scrolled3].size,620,height-20);
-    fill(population[population.length-1+scrolled3].rgb);
-    rect(620,height-90,10,10);
-    fill("yellow");
-    rect(population[population.length-1+scrolled3].x-1.5+population[population.length-1+scrolled3].size/2,population[population.length-1+scrolled3].y-2,3,3); // replace elsewhere later
-    fill(255);
+      text(population[population.length-1+scrolled3].name + " " + population[population.length-1+scrolled3].surname,640,height-100); // profile displays
+      text(population[population.length-1+scrolled3].form,620,height-85);
+      text(population[population.length-1+scrolled3].contributions,660,height-85);
+      text(population[population.length-1+scrolled3].personality,620,height-70);
+      text("age" + " " + population[population.length-1+scrolled3].age,620,height-55);
+      text(population[population.length-1+scrolled3].race[0],620,height-40);
+      text("size " + population[population.length-1+scrolled3].size,620,height-25); 
+      fill(population[population.length-1+scrolled3].rgb);
+      rect(620,height-110,10,10);
+      fill("yellow");
+      rect(population[population.length-1+scrolled3].x-1.5+population[population.length-1+scrolled3].size/2,population[population.length-1+scrolled3].y-2,3,3); // replace elsewhere later
+      fill(255);
     } 
-    text("L to exit",width-100,height-80);
-    text("gamespeed " +gSpd + "x",width-250,height-80);
+    text("L to exit",width-60,height-100);
+    text("gamespeed " +gSpd + "x",width-90,height-20);
+    fill(50 + gSpd*50);
+    rect(width-70,height-90,50,50);
   }
 }
 
 function mouseClicked(){  // creates a brand new person of a ncew race at mouse location
-  if(historyLog &&mouseY >= height-100){
-    if(mouseX >= width-225&& mouseX<= width-175){
+  if(historyLog &&mouseY >= height-90&&mouseY<=height-40){
+    if(mouseX >= width-70&& mouseX<= width-20){
       if(gSpd===4){ // game speed changer
         gSpd = 1;
       }
@@ -192,13 +193,12 @@ function mouseClicked(){  // creates a brand new person of a ncew race at mouse 
 
 function newBorn(ethnicity,surname,x,y,size){
   let name = names[Math.floor(random(names.length))]; // new person gets name
-  let lastname = surnames[Math.floor(random(surnames.length))];
   if(races.length===0 || random(300)>291||ethnicity==="none"){
     let racename = [surname.concat(suffixes[Math.floor(random(suffixes.length))])]; // new race creation
     races.push(racename);
     races[races.length-1].push(color(random(0,255),random(0,255),random(0,255)));
     let colour = races[races.length-1][1]; // making identifiers for new race
-    population.push(new Bacteria(x,y,racename,name,lastname,colour,size)); // adding new person to the world populus [population.indexOf(racename)]***
+    population.push(new Bacteria(x,y,racename,name,surname,colour,size)); // adding new person to the world populus [population.indexOf(racename)]***
   }
   else{ // new person same race
     let colour = races[races.indexOf(ethnicity)][1];
@@ -234,6 +234,7 @@ function build(whereY,whereX,what){//where to build and what its building
 
 class Bacteria {
   constructor (x,y,race,title1,title2,colour,size){
+    this.contributions = 0;
     this.x=x;
     this.y=y;
     this.race=race;
@@ -313,14 +314,15 @@ class Bacteria {
       if(random(100)>=this.chance){
         broadcast(this.name + " " + this.surname + " had a kid!");
         broadcast("welcome " + newBorn(this.race,this.surname,this.x,this.y,this.size)+ "!");
+        this.contributions ++;
       }
     }
     else if(this.form === "soldier"&&frameCount%(800/gSpd)===0&&this.age>18&&this.age<69){ // split
       if(random(100)>=this.chance){
-        grid[Math.floor((this.y)/tilesize)][Math.floor((this.x)/tilesize)][5] = this.race[1];
+        grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][5] = this.race[1];
         broadcast("the " + this.race[0] + " have expanded their territory!");
         broadcast("long live the " + this.race[0] +" empire!");
-        console.log(grid[Math.floor((this.y)/tilesize)][Math.floor((this.x)/tilesize)][5]);
+        this.contributions ++;
       }
     }
     else if(this.form === "worker"&&frameCount%(1600/gSpd)===0&&this.age>18&&this.age<69){ // build
@@ -330,6 +332,7 @@ class Bacteria {
             if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
               build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),6);
               broadcast(this.name + " " + this.surname + " has built a house!");
+              this.contributions ++;
               if(random(100)>39||this.age>47){
                 this.form = "parent";
               }
