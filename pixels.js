@@ -124,11 +124,11 @@ function draw() {
     broadcast(news);
     if(miniMenu === 0){
       fill(70);
-      rect(0,height-120,250,120);
+      rect(0,height-120,290,120);
     }
     else if(miniMenu === 1){
       fill(70);
-      rect(250,height-120,200,120);
+      rect(290,height-120,200,120);
     }
     else if(miniMenu === 2){
       fill(70);
@@ -160,6 +160,7 @@ function draw() {
       text(population[population.length-1+scrolled3].contributions,660,height-85);
       text(population[population.length-1+scrolled3].personality,620,height-70);
       text("age" + " " + population[population.length-1+scrolled3].age,620,height-55);
+      text(population[population.length-1+scrolled3].ressources,670,height-55);
       text(population[population.length-1+scrolled3].race[0],620,height-40);
       text("size " + population[population.length-1+scrolled3].size,620,height-25); 
       fill(population[population.length-1+scrolled3].rgb);
@@ -228,8 +229,9 @@ function displayBact(){
   }
 }
 
-function build(whereY,whereX,what){//where to build and what its building
+function build(whereY,whereX,what,who,token){//where to build and what its building
   grid[whereY][whereX][4] = what;
+  grid[whereY][whereX][5] = who;
 }
 
 class Bacteria {
@@ -248,10 +250,27 @@ class Bacteria {
     this.current;
     this.maxage = Math.floor(random(45,80)); // when they die of old age
     this.rgb = colour;
-    this.form = form[Math.floor(random(3))]; // role in society
-    this.chance = random(35,69); // likelihood of performing actions
+    this.ressources = 0;
+    if(population.length<=7){
+      this.form = "parent";
+    }
+    else{
+      this.form = form[Math.floor(random(3))]; // role in society
+    }
     if(this.form==="worker"){
+      if(random(100)>50||population.length<40){
+        this.form= "carpenter";
+      }
+      else{
+        this.form = "stonemason";
+      }
+    }
+    this.chance = random(35,69); // likelihood of performing actions
+    if(this.form==="carpenter"){
       this.buildables = [1,2,5];
+    }
+    else if(this.form==="stonemason"){
+      this.buildables = [0];
     }
     if(this.traits==="lucky"){
       this.chance = 95;
@@ -325,15 +344,65 @@ class Bacteria {
         this.contributions ++;
       }
     }
-    else if(this.form === "worker"&&frameCount%(1600/gSpd)===0&&this.age>18&&this.age<69){ // build
-      if(random(100)>=this.chance){
+    else if(this.form === "carpenter"&&frameCount%(1600/gSpd)===0&&this.age>18&&this.age<69){ // build
+      if(this.ressources > 0){
+        this.buildables = [1,2,5];
+        this.token = "construct";
+      }
+      else{
+        this.buildables = [3];
+        this.token = "deconstruct";
+      }
+      if(this.form === "carpenter"){
         for(let y = -1; y < 2; y++){
           for(let x = -1; x < 2; x++){
             if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
-              build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),6);
-              broadcast(this.name + " " + this.surname + " has built a house!");
+              if(this.token === "construct"){
+                build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),6,this.race[1],this.token);
+                broadcast(this.name + " " + this.surname + " has built a house!");
+                this.ressources--;
+              }
+              else{
+                build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),2,this.race[1],this.token);
+                console.log("tree gone");
+                this.ressources++;
+              }
               this.contributions ++;
               if(random(100)>39||this.age>47){
+                this.form = "parent";
+              }
+              return true;
+            }
+          }
+        }
+      }
+    }
+    
+    else if(this.form === "stonemason"&&frameCount%(1800/gSpd)===0&&this.age>18&&this.age<69){ // build
+      if(this.ressources > 0){
+        this.buildables = [0];
+        this.token = "construct";
+      }
+      else{
+        this.buildables[4];
+        this.token = "deconstruct";
+      }
+      if(this.form === "stonemason"){
+        for(let y = -1; y < 2; y++){
+          for(let x = -1; x < 2; x++){
+            if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
+              if(this.token === "construct"){
+                build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),7,this.race[1],this.token);
+                broadcast(this.name + " " + this.surname + " has built a bridge!");
+                this.ressources--;
+              }
+              else{
+                build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),2,this.race[1],this.token);
+                console.log("rock gone");
+                this.ressources++;
+              }
+              this.contributions ++;
+              if(random(100)>69||this.age>44){
                 this.form = "parent";
               }
               return true;
@@ -375,7 +444,8 @@ function displayGrid(){
             b = 95;
             grid[n][m][3] = 1;
           }
-          else if(grid[n][m][0] <68){ // grass
+          else if(grid[n][m][0] <68||grid[n][m][4] === 2){ // grass
+            grid[n][m][0] = 65;
             r = 40; 
             g = 100; 
             b = 30;
@@ -394,14 +464,15 @@ function displayGrid(){
             grid[n][m][3] = 4;
           }
         }
-        if(biome === 2){ // dessert
+        if(biome === 2){ // desert
           if(grid[n][m][0] < 7){ //water // drawing correct terrain
             r = 40; 
             g = 80; 
             b= random(100,131);
             grid[n][m][3] = 0;
           }
-          else if(grid[n][m][0] < 50){ // beach/sand
+          else if(grid[n][m][0] < 50||grid[n][m][4] === 2){ // beach/sand
+            grid[n][m][0] = 49;
             r = 230; 
             g = 160; 
             b = 90;
@@ -433,7 +504,8 @@ function displayGrid(){
             b= random(210,241);
             grid[n][m][3] = 5; // ice
           }
-          else if(grid[n][m][0] < 62){ // grass/snow
+          else if(grid[n][m][0] < 62||grid[n][m][4]=== 2){ // grass/snow
+            grid[n][m][0] = 61;
             r = 210; 
             g = 210; 
             b = 225;
@@ -460,7 +532,8 @@ function displayGrid(){
             b= random(85,120);
             grid[n][m][3] = 0; // water
           }
-          else if(grid[n][m][0] < 78){ // beach/sand
+          else if(grid[n][m][0] < 78||grid[n][m][4]===2){ // beach/sand
+            grid[n][m][0] = 69;
             r = 230; 
             g = 160; 
             b = 90;
