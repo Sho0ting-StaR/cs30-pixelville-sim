@@ -7,14 +7,15 @@
 let gSpd = 4;
 let world = 0;
 let politico = false;
-let dms = ["left this world","ascended","did a woopsie","perished","faced their demise","reached the end","ran into a wall.. hard","died","left early","took their leave", "made their final escape","risked it all","lost the game of life", "was banned","died","fell over","hurted real bad","has fallen heroically","succumbed to time"];
+let dms = ["Left this world","Ascended","Did a woopsie","Perished","Faced their demise","Reached the end","Ran into a wall.. hard","Died","Left early","Took their leave", "Made their final escape","Risked it all","Lost the game of life", "Was banned","Died","Fell over","Hurted real bad","Has fallen heroically","Succumbed to time"];
 let suffixes = ["ians","ius","sons","dotirs","kins","tyrs","yivans","etans","ics","itos","ikes","jins","kidds","steels","qis","yuks","chuks","piks","jikis","hydes","piers","fibs","hearts","souls","wings","winds","grims"];
-let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre","pure","fuller","hope","fortnite","sigil","bush","boulder","bird","dove","steele","jasper","rouge","kiwi","kanuk","pibb"];
-let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre","terry","jeep","karl","gibby","gaston","belle","Brooklynn","fig","hope","fern","twig","pebble","blessing","joy","dove","sabrina","marty","monty","moon","happy","willow","tom","jasper","wren","bird","crumb","anastasia","peter","adam","eve","julian",
-"jordan","jacob","lola","tina","teddy","parker","pablo","jared","edmund","oscar","william","victor","brian","amelia","gabbie","terra","pearl","jose","malcolm"];
-let traits = ["explorer","cautious","dumb","swimmer","angry","lucky","religious"];
-let form = ["soldier","parent","worker"];
-let religi = ["basilica ","church ","temple ", "cathedral", "sanctum","sons","daughters","children","wrath","branch","spawn","cult","witnesses","followers","chosen","council","will","descendants","followers"];
+let surnames = [" Johnson","Falcon","Roberts","Tiny","Humble","Berrington","Afton","Twilight","Moon","Tin","Dragun","Apple","Maguire","Stone","Fazbear","Smith","Lafontaine","Pierre","Pure","Fuller","Hope","Fortnite","Sigil","Bush","Boulder","Bird","Dove","Steele","Jasper","Rouge","Kiwi","Kanuk","Pibb"];
+let names = ["John","Bob","Paul","Regina","Kara","Gronk","William","Micheal","Doug","David","Megan","Missy","Teresa","Lady","Guy","Freddy","Chica","Bonnie","Roxy","Edward","Nikita","Guiseppi","Remi","Pierre","Terry","Jeep","Karl","Gibby","Gaston",
+  "Belle","Brooklynn","Fig","Hope","Fern","Twig","Pebble","Blessing","Joy","Dove","Sabrina","Marty","Monty","Moon","Happy","Willow","Tom","Jasper","Wren","Bird","Crumb","Anastasia","Peter","Adam","Eve","Julian",
+  "Jordan","Jacob","Lola","Tina","Teddy","Parker","Pablo","Jared","Edmund","Oscar","William","Victor","Brian","Amelia","Gabbie","Terra","Pearl","Jose","Malcolm"];
+let traits = ["explorer","cautious","dumb","swimmer","angry","lucky","religious","resourceful"];
+let form = ["Soldier","Parent","Worker"];
+let religi = ["Basilica ","Church ","Temple ", "Cathedral", "Sanctum","Sons","Daughters","Children","Wrath","Branch","Spawn","Cult","Witnesses","Followers","Chosen","Council","Will","Descendants","Followers"];
 let religions = [];
 let races = [];
 let biome;
@@ -26,8 +27,8 @@ let tilesize = 30;
 let wScale;
 let winX = 52;
 let winY = 30;
-let news = "Hello world!";
 let historyLog = true;
+let news = "...";
 let wHistory = [];
 let scrolled = 0;
 let scrolled2 = 0;
@@ -43,6 +44,7 @@ function setup() {
   background(0);
   createGrid(winX,winY);
   geoMapping(grid); 
+  broadcast( "Hello world!");
 }
 
 function draw() {
@@ -71,6 +73,7 @@ function draw() {
         if(frameCount%(4/gSpd)===0){
           if(population[n].living){
             population[n].stroll();
+            population[n].popCheck();
             population[n].action();
           }
         }
@@ -87,7 +90,7 @@ function draw() {
   else{
     text(0,15,15);
   }
-  text("world age" + " " + world,100,15); // simulation run time
+  text("World age" + " " + world,100,15); // simulation run time
   if(historyLog){
     if(frameCount %6 === 0){
       if(keyIsDown(37)){
@@ -184,10 +187,10 @@ function draw() {
       text(population[population.length-1+scrolled3].form,640,height-85);
       text(population[population.length-1+scrolled3].contributions,620,height-85);
       text(population[population.length-1+scrolled3].traits,620,height-70);
-      text("age" + " " + population[population.length-1+scrolled3].age,620,height-55);
+      text("Age" + " " + population[population.length-1+scrolled3].age,620,height-55);
       text(population[population.length-1+scrolled3].resources,670,height-55);
       text(population[population.length-1+scrolled3].race[0],620,height-40);
-      text("size " + population[population.length-1+scrolled3].size,620,height-25); 
+      text("Size " + population[population.length-1+scrolled3].size,620,height-25); 
       text(population[population.length-1+scrolled3].religion,620,height-10);
       fill(population[population.length-1+scrolled3].rgb);
       rect(620,height-110,10,10);
@@ -198,6 +201,7 @@ function draw() {
     for(let c = 1; c<= religions.length;c++){  // fix full logging system here
       if(!(religions.length-c+scrolled4<0)){
         fill(255);
+        let four = 0;
         if(miniMenu === 2){
           four = 180;
         }
@@ -209,7 +213,7 @@ function draw() {
       }
     }
     text("L to exit",width-60,height-100);
-    text("gamespeed " +gSpd + "x",width-90,height-20);
+    text("Gamespeed " +gSpd + "x",width-90,height-20);
     fill(50 + gSpd*50);
     rect(width-70,height-90,50,50);
   }
@@ -227,7 +231,7 @@ function mouseClicked(){  // creates a brand new person of a ncew race at mouse 
     }
   }
   else{
-    broadcast("welcome " + newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY,2,[],"none")+ "!");
+    broadcast("Welcome " + newBorn("none",surnames[Math.floor(random(surnames.length))],mouseX,mouseY,2,[],"none")+ "!");
   }
 }
 
@@ -237,7 +241,7 @@ function newBorn(ethnicity,surname,x,y,size,types,religion){
     let racename = [surname.concat(suffixes[Math.floor(random(suffixes.length))])]; // new race creation
     races.push(racename);
     races[races.length-1].push(color(random(0,255),random(0,255),random(0,255)));
-    races[races.length-1].push([]);
+    races[races.length-1].push(["Atheist"]);
     let colour = races[races.length-1][1]; // making identifiers for new race
     population.push(new Bacteria(x,y,racename,name,surname,colour,size,types,religion)); // adding new person to the world populus [population.indexOf(racename)]***
   }
@@ -254,7 +258,7 @@ function displayBact(){ // drawing all the little guys
     let spot2 = Math.floor(population[p].x/tilesize);
     if(buildings.includes(grid[Math.floor(population[p].y/tilesize)][Math.floor(population[p].x/tilesize)][4])){
       if(population[p].x>spot2+tilesize/4&&population[p].x<spot2+3*tilesize/4&&population[p].y>spot+tilesize/4&&population[p].y<spot+3*tilesize/4){
-      }
+        let l} // figure out what this is for
     }
     else{
       if(population[p].form === "pope"){
@@ -282,14 +286,24 @@ function wildBandSpawn(){ // random group spawning
   let yy = random(60,height-60);
   let ln = surnames[Math.floor(random(surnames.length))];
   let et = [ln.concat(suffixes[Math.floor(random(suffixes.length))])];
-  broadcast("a wild band of " + et + " has appeared!");
+  
   races.push(et);
   races[races.length-1].push(color(random(0,255),random(0,255),random(0,255)));
   races[races.length-1].push([]);
   let col = races[races.length-1][1];
   let s = Math.floor(random(3,7));
   for(let l = 0; l<s; l++){
-    population.push(new Bacteria(xx,yy,et,names[Math.floor(random(names.length))],ln,col,2,[],"none"));
+    if(grid[Math.floor(yy/tilesize)][Math.floor(xx/tilesize)][3] === 0){
+      population.push(new Bacteria(xx,yy,et,names[Math.floor(random(names.length))],ln,col,2,["swimmer"],"none"));
+    }
+    else if([3,4].includes(grid[Math.floor(yy/tilesize)][Math.floor(xx/tilesize)][3])){
+      broadcast( "A wild band of " + et[0] + " almost appeared..");
+      return true;
+    }
+    else{
+      population.push(new Bacteria(xx,yy,et,names[Math.floor(random(names.length))],ln,col,2,[],"none"));
+    }
+    broadcast("A wild band of " + et[0] + " has appeared!");
   }
 }
 
@@ -303,8 +317,12 @@ class Bacteria {
     this.surname = title2;
     this.size = size;
     this.age = 0;
-    this.traits = types;
-    this.traits.push(traits[Math.floor(random(traits.length))]); // deciding movement behaviours
+    this.traits = [traits[Math.floor(random(traits.length))]];
+    for(let l of types){
+      if(!this.traits.includes(l)){
+        this.traits.push(l); // deciding movement behaviours
+      }
+    }
     this.repeat;
     this.allowed = [1,2,5,7,8]; //sand,ground,ice,house,path,apartment
     this.current;
@@ -313,34 +331,37 @@ class Bacteria {
     this.resources = 0;
     this.religion = religion;
     if(population.length<=15){
-      this.form = "parent";
+      this.form = "Parent";
     }
     else{
       this.form = form[Math.floor(random(3))]; // role in society
     }
-    if(this.form==="worker"){
+    if(this.form==="Worker"){
       if(random(100)>50||population.length<40){
-        this.form= "carpenter";
+        this.form= "Carpenter";
       }
       else{
         this.form = "stonemason";
       }
     }
     this.chance = random(35,69); // likelihood of performing actions
-    if(this.form==="carpenter"){
+    if(this.form==="Carpenter"){
       this.buildables = [1,2,5];
     }
-    else if(this.form==="stonemason"){
+    else if(this.form==="Stonemason"){
       this.buildables = [0];
     }
-    if(this.traits.includes("lucky")){
+    if(this.traits.includes("Lucky")){
       this.chance = 81; // in memorium of sabrina falcon
     }
-    if(this.traits.includes("cautious")){
+    if(this.traits.includes("Cautious")){
       this.allowed.push(6);
     }
-    if(this.traits.includes("swimmer")){
+    if(this.traits.includes("Swimmer")){
       this.allowed.push(0);
+    }
+    if(this.traits.includes("Resourceful")){
+      this.resources = 1;
     }
     this.living = true;
   }
@@ -379,7 +400,7 @@ class Bacteria {
   }
   death(){
     if(this.living){
-      if(this.traits.includes("dumb")&&this.age>this.maxage-29||this.age>this.maxage||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])){
+      if(this.traits.includes("Dumb")&&this.age>this.maxage-24||this.age>this.maxage){ // removed ||!this.allowed.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][3])
         this.living = false;
         broadcast(this.name + " " + this.surname +" " + dms[Math.floor(random(dms.length))] +" at " + this.age);
         let scale = this.size;
@@ -388,11 +409,16 @@ class Bacteria {
       }
     }
   }
+  popCheck(){
+    if(this.living&&population.length <= 15){
+      this.form = "Parent";
+    }
+  }
   vision(){
-    if(frameCount%1111===0){
+    if(frameCount%999===0){
       if(this.chance+30>random(100)&&population.length>50){
-        if(this.age>35&&this.form !== "pope"&&this.traits.includes("religious")&&this.religion==="none"){
-          this.form = "pope";
+        if(this.age>35&&this.form !== "Pope"&&this.traits.includes("Religious")&&this.religion==="none"){
+          this.form = "Pope";
           this.resources = 1;
           broadcast(this.name +" "+this.surname + " has had a vision of religious ecstacy!");
         }
@@ -401,25 +427,29 @@ class Bacteria {
   }
   action(){
     let wt = 1300;
-    if(this.traits.includes("religious")){
+    if(this.traits.includes("Religious")){
       wt = 999;
     }
-    if(this.form === "parent"&&frameCount%(wt/gSpd)===0&&this.age>23&&this.age<53&&this.size>=4){ // split
+    if(this.form === "Parent"&&frameCount%(wt/gSpd)===0&&this.age>23&&this.age<53&&this.size>=4){ // split
       if(random(100)>=this.chance){
         this.size = this.size/2;
         broadcast(this.name + " " + this.surname + " had a kid!");
-        console.log(this.race[2]);
-        console.log(this.race[2].length);
-        broadcast("welcome " + newBorn(this.race,this.surname,this.x,this.y,this.size,this.traits,this.race[2][Math.floor(random(this.race[2].length))])+ "!");
+        broadcast("Welcome " + newBorn(this.race,this.surname,this.x,this.y,this.size,this.traits,this.race[2][Math.floor(random(this.race[2].length))])+ "!");
         this.contributions ++;
+        if(this.resources === 1){
+          broadcast(this.name + " " + this.surname + " had a kid!");
+          broadcast("Welcome " + newBorn(this.race,this.surname,this.x,this.y,this.size,this.traits,this.race[2][Math.floor(random(this.race[2].length))])+ "!");
+          this.contributions ++;
+          this.resources --;
+        }
       }
     }
-    else if(this.form === "pope"){
+    else if(this.form === "Pope"){
       this.buildables = buildings;
       if(this.buildables.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][4])){
         if(this.resources>0){
           build(Math.floor(this.y/tilesize),Math.floor(this.x/tilesize),9,this.race[1]);
-          broadcast("pope " + this.name + " " + this.surname + " blessed a shrine!");
+          broadcast("Pope " + this.name + " " + this.surname + " blessed a shrine!");
           let rel = religi[Math.floor(random(religi.length))] +" of " + this.surname;
           this.religion = rel;
           broadcast(this.religion + " has been erected!");
@@ -427,19 +457,19 @@ class Bacteria {
           this.race[2].push(this.religion);
           this.resources--;
         }
-      this.contributions ++;
-      return true;
+        this.contributions ++;
+        return true;
       }
     }
-    else if(this.form === "soldier"&&frameCount%(800/gSpd)===0&&this.age>18&&this.age<69){ // split
+    else if(this.form === "Soldier"&&frameCount%(800/gSpd)===0&&this.age>18&&this.age<69){ // split
       if(random(100)>=this.chance){
         grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][5] = this.race[1];
-        broadcast("the " + this.race[0] + " have expanded their territory!");
-        broadcast("long live the " + this.race[0] +" empire!");
+        broadcast("The " + this.race[0] + " have expanded their territory!");
+        broadcast("Long live the " + this.race[0] +" empire!");
         this.contributions ++;
       }
     }
-    else if(this.form === "carpenter"&&frameCount%(1600/gSpd)===0&&this.age>18&&this.age<69){ // build
+    else if(this.form === "Carpenter"&&frameCount%(1600/gSpd)===0&&this.age>18&&this.age<69){ // build
       if(this.resources > 0){
         this.buildables = [1,2,5];
         this.token = "construct";
@@ -448,23 +478,22 @@ class Bacteria {
         this.buildables = [3];
         this.token = "deconstruct";
       }
-      if(this.form === "carpenter"){
+      if(this.form === "Carpenter"){
         for(let y = -1; y < 2; y++){
           for(let x = -1; x < 2; x++){
             if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
-              if(this.token === "construct"){
+              if(this.token === "Construct"){
                 build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),6,this.race[1],this.token);
                 broadcast(this.name + " " + this.surname + " has built a house!");
                 this.resources--;
               }
               else{
                 build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),2,this.race[1],this.token);
-                console.log("tree gone");
                 this.resources++;
               }
               this.contributions ++;
               if(random(100)>39||this.age>47){
-                this.form = "parent";
+                this.form = "Parent";
               }
               return true;
             }
@@ -472,7 +501,7 @@ class Bacteria {
         }
       }
     }
-    else if(this.form === "stonemason"&&frameCount%(1800/gSpd)===0&&this.age>18&&this.age<69){ // build
+    else if(this.form === "Stonemason"&&frameCount%(1800/gSpd)===0&&this.age>18&&this.age<69){ // build
       if(this.resources > 0){
         this.buildables = [0];
         this.token = "construct";
@@ -481,7 +510,7 @@ class Bacteria {
         this.buildables[4];
         this.token = "deconstruct";
       }
-      if(this.form === "stonemason"){
+      if(this.form === "Stonemason"){
         for(let y = -1; y < 2; y++){
           for(let x = -1; x < 2; x++){
             if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
@@ -491,13 +520,12 @@ class Bacteria {
                 this.resources--;
               }
               else{
-                build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),2,this.race[1],this.token);
-                console.log("rock gone");
-                this.resources++;
+                build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),2,this.race[1],"deconstruct");
+                // this.resources++;
               }
               this.contributions ++;
               if(random(100)>69||this.age>44){
-                this.form = "parent";
+                this.form = "Parent";
               }
               return true;
             }
