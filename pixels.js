@@ -23,7 +23,7 @@ let grid = [];
 let peaks = [];
 let tilesize = 30;
 let wScale;
-let winX = 50;
+let winX = 52;
 let winY = 30;
 let news = "Hello world!";
 let historyLog = true;
