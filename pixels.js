@@ -7,13 +7,14 @@
 let gSpd = 4;
 let world = 0;
 let politico = false;
-let dms = ["left this world","ascended","did a woopsie","perished","faced their demise","reached the end","ran into a wall.. hard","died","left early","took their leave", "made their final escape","risked it all","lost the game of life", "was banned","died","fell over","hurted real bad"];
-let suffixes = ["ians","ius","sons","dotirs","kins","tyrs","yivans","etans","ics","itos","ikes","jins","kidds","steels","qis","yuks","chuks","piks","jikis","hydes","piers","fibs"];
+let dms = ["left this world","ascended","did a woopsie","perished","faced their demise","reached the end","ran into a wall.. hard","died","left early","took their leave", "made their final escape","risked it all","lost the game of life", "was banned","died","fell over","hurted real bad","has fallen heroically","succumbed to time"];
+let suffixes = ["ians","ius","sons","dotirs","kins","tyrs","yivans","etans","ics","itos","ikes","jins","kidds","steels","qis","yuks","chuks","piks","jikis","hydes","piers","fibs","hearts","souls","wings","winds","grims"];
 let surnames = [" johnson","falcon","roberts","tiny","humble","berrington","afton","twilight","moon","tin","dragun","apple","maguire","stone","fazbear","smith","lafontaine","pierre","pure","fuller","hope","fortnite","sigil","bush","boulder","bird","dove","steele","jasper","rouge","kiwi","kanuk","pibb"];
-let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre","terry","jeep","karl","gibby","gaston","belle","Brooklynn","fig","hope","fern","twig","pebble","blessing","joy","dove","sabrina","marty","monty","moon","happy","willow","tom","jasper","wren","bird","crumb","anastasia","peter","adam","eve","julian","jordan","jacob","lola","tina","teddy","parker","pablo","jared","edmund","oscar","william"];
+let names = ["john","bob","paul","regina","kara","gronk","william","micheal","doug","david","megan","missy","teresa","lady","guy","freddy","chica","bonnie","roxy","edward","nikita","guiseppi","remi","pierre","terry","jeep","karl","gibby","gaston","belle","Brooklynn","fig","hope","fern","twig","pebble","blessing","joy","dove","sabrina","marty","monty","moon","happy","willow","tom","jasper","wren","bird","crumb","anastasia","peter","adam","eve","julian",
+"jordan","jacob","lola","tina","teddy","parker","pablo","jared","edmund","oscar","william","victor","brian","amelia","gabbie","terra","pearl","jose","malcolm"];
 let traits = ["explorer","cautious","dumb","swimmer","angry","lucky","religious"];
 let form = ["soldier","parent","worker"];
-let religi = ["basilica ","church ","temple ", "cathedral", "sanctum","sons","daughters","children","wrath","branch","spawn","cult","witnesses","followers","chosen"];
+let religi = ["basilica ","church ","temple ", "cathedral", "sanctum","sons","daughters","children","wrath","branch","spawn","cult","witnesses","followers","chosen","council","will","descendants","followers"];
 let religions = [];
 let races = [];
 let biome;
@@ -236,6 +237,7 @@ function newBorn(ethnicity,surname,x,y,size,types,religion){
     let racename = [surname.concat(suffixes[Math.floor(random(suffixes.length))])]; // new race creation
     races.push(racename);
     races[races.length-1].push(color(random(0,255),random(0,255),random(0,255)));
+    races[races.length-1].push([]);
     let colour = races[races.length-1][1]; // making identifiers for new race
     population.push(new Bacteria(x,y,racename,name,surname,colour,size,types,religion)); // adding new person to the world populus [population.indexOf(racename)]***
   }
@@ -275,7 +277,7 @@ function build(whereY,whereX,what,who){//where to build and what its building
   grid[whereY][whereX][5] = who;
 }
 
-function wildBandSpawn(){
+function wildBandSpawn(){ // random group spawning
   let xx = random(60,width-60);
   let yy = random(60,height-60);
   let ln = surnames[Math.floor(random(surnames.length))];
@@ -283,10 +285,11 @@ function wildBandSpawn(){
   broadcast("a wild band of " + et + " has appeared!");
   races.push(et);
   races[races.length-1].push(color(random(0,255),random(0,255),random(0,255)));
+  races[races.length-1].push([]);
   let col = races[races.length-1][1];
-  for(let l = 0; l<3; l++){
-    // (x,y,ethnicity,name,surname,colour,size)
-    population.push(new Bacteria(xx,yy,et,names[Math.floor(random(names.length))],ln,col,2,[]));
+  let s = Math.floor(random(3,7));
+  for(let l = 0; l<s; l++){
+    population.push(new Bacteria(xx,yy,et,names[Math.floor(random(names.length))],ln,col,2,[],"none"));
   }
 }
 
@@ -309,7 +312,7 @@ class Bacteria {
     this.rgb = colour;
     this.resources = 0;
     this.religion = religion;
-    if(population.length<=7){
+    if(population.length<=15){
       this.form = "parent";
     }
     else{
@@ -331,7 +334,7 @@ class Bacteria {
       this.buildables = [0];
     }
     if(this.traits.includes("lucky")){
-      this.chance = 69;
+      this.chance = 81; // in memorium of sabrina falcon
     }
     if(this.traits.includes("cautious")){
       this.allowed.push(6);
@@ -387,15 +390,11 @@ class Bacteria {
   }
   vision(){
     if(frameCount%1111===0){
-      if(this.chance+30>random(100)){
+      if(this.chance+30>random(100)&&population.length>50){
         if(this.age>35&&this.form !== "pope"&&this.traits.includes("religious")&&this.religion==="none"){
           this.form = "pope";
           this.resources = 1;
           broadcast(this.name +" "+this.surname + " has had a vision of religious ecstacy!");
-          let rel = religi[Math.floor(random(religi.length))] +" of " + this.surname;
-          this.religion = rel;
-          broadcast(this.religion + " has been erected!");
-          religions.push([rel,structuredClone(world)]);
         }
       }
     }
@@ -409,7 +408,9 @@ class Bacteria {
       if(random(100)>=this.chance){
         this.size = this.size/2;
         broadcast(this.name + " " + this.surname + " had a kid!");
-        broadcast("welcome " + newBorn(this.race,this.surname,this.x,this.y,this.size,this.traits,this.religion)+ "!");
+        console.log(this.race[2]);
+        console.log(this.race[2].length);
+        broadcast("welcome " + newBorn(this.race,this.surname,this.x,this.y,this.size,this.traits,this.race[2][Math.floor(random(this.race[2].length))])+ "!");
         this.contributions ++;
       }
     }
@@ -419,6 +420,11 @@ class Bacteria {
         if(this.resources>0){
           build(Math.floor(this.y/tilesize),Math.floor(this.x/tilesize),9,this.race[1]);
           broadcast("pope " + this.name + " " + this.surname + " blessed a shrine!");
+          let rel = religi[Math.floor(random(religi.length))] +" of " + this.surname;
+          this.religion = rel;
+          broadcast(this.religion + " has been erected!");
+          religions.push([rel,structuredClone(world)]);
+          this.race[2].push(this.religion);
           this.resources--;
         }
       this.contributions ++;
@@ -466,7 +472,6 @@ class Bacteria {
         }
       }
     }
-    
     else if(this.form === "stonemason"&&frameCount%(1800/gSpd)===0&&this.age>18&&this.age<69){ // build
       if(this.resources > 0){
         this.buildables = [0];
