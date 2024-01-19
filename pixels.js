@@ -36,6 +36,27 @@ let scrolled3 = 0;
 let scrolled4 = 0;
 let miniMenu = 0;
 let poliMap = false;
+let baby;
+let carpenter;
+let house1;
+let house2;
+let house3;
+let parentI;
+let pope;
+let soldier;
+let stonemason;
+
+function preload(){
+  baby = loadImage("images/baby.png");
+  carpenter = loadImage("images/carpenter.png");
+  house1 = loadImage("images/house1.png");
+  house2 = loadImage("images/house2.png");
+  house3 = loadImage("images/house3.png");
+  parentI = loadImage("images/parent.png");
+  pope = loadImage("images/pope.png");
+  soldier = loadImage("images/soldier.png");
+  stonemason = loadImage("images/stonemason.png");
+}
 
 function setup() {
   biome = Math.floor(random(1,5));
@@ -271,7 +292,8 @@ function displayBact(){ // drawing all the little guys
       else{
         fill(0);
       }
-      rect(population[p].x,population[p].y,population[p].size,population[p].size);
+      rect(population[p].x, population[p].y, population[p].size+1, population[p].size+1);
+      image(population[p].img, population[p].x, population[p].y,population[p].size,population[p].size);
     }
   }
 }
@@ -309,6 +331,7 @@ function wildBandSpawn(){ // random group spawning
 
 class Bacteria {
   constructor (x,y,race,title1,title2,colour,size,types,religion){
+    this.img = baby;
     this.contributions = 0;
     this.x=x;
     this.y=y;
@@ -328,10 +351,11 @@ class Bacteria {
     this.current;
     this.maxage = Math.floor(random(45,80)); // when they die of old age
     this.rgb = colour;
-    this.resources = 0;
+    this.resources = 1;
     this.religion = religion;
     if(population.length<=15){
       this.form = "Parent";
+      this.img = parentI;
     }
     else{
       this.form = form[Math.floor(random(3))]; // role in society
@@ -339,9 +363,11 @@ class Bacteria {
     if(this.form==="Worker"){
       if(random(100)>50||population.length<40){
         this.form= "Carpenter";
+        this.img = carpenter;
       }
       else{
         this.form = "stonemason";
+        this.img = stonemason;
       }
     }
     this.chance = random(35,69); // likelihood of performing actions
@@ -412,6 +438,7 @@ class Bacteria {
   popCheck(){
     if(this.living&&population.length <= 15){
       this.form = "Parent";
+      this.img = parentI;
     }
   }
   vision(){
@@ -419,6 +446,7 @@ class Bacteria {
       if(this.chance+30>random(100)&&population.length>50){
         if(this.age>35&&this.form !== "Pope"&&this.traits.includes("Religious")&&this.religion==="none"){
           this.form = "Pope";
+          this.img = pope;
           this.resources = 1;
           broadcast(this.name +" "+this.surname + " has had a vision of religious ecstacy!");
         }
@@ -431,6 +459,7 @@ class Bacteria {
       wt = 999;
     }
     if(this.form === "Parent"&&frameCount%(wt/gSpd)===0&&this.age>23&&this.age<53&&this.size>=4){ // split
+      this.img = parentI;
       if(random(100)>=this.chance){
         this.size = this.size/2;
         broadcast(this.name + " " + this.surname + " had a kid!");
@@ -445,6 +474,7 @@ class Bacteria {
       }
     }
     else if(this.form === "Pope"){
+      this.img = pope;
       this.buildables = buildings;
       if(this.buildables.includes(grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][4])){
         if(this.resources>0){
@@ -462,6 +492,7 @@ class Bacteria {
       }
     }
     else if(this.form === "Soldier"&&frameCount%(800/gSpd)===0&&this.age>18&&this.age<69){ // split
+      this.img = soldier;
       if(random(100)>=this.chance){
         grid[Math.floor(this.y/tilesize)][Math.floor(this.x/tilesize)][5] = this.race[1];
         broadcast("The " + this.race[0] + " have expanded their territory!");
@@ -469,7 +500,8 @@ class Bacteria {
         this.contributions ++;
       }
     }
-    else if(this.form === "Carpenter"&&frameCount%(1600/gSpd)===0&&this.age>18&&this.age<69){ // build
+    else if(this.form === "Carpenter"&&frameCount%(1500/gSpd)===0&&this.age>18&&this.age<69){ // build
+      this.img = carpenter;
       if(this.resources > 0){
         this.buildables = [1,2,5];
         this.token = "construct";
@@ -485,6 +517,7 @@ class Bacteria {
               if(this.token === "Construct"){
                 build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),6,this.race[1],this.token);
                 broadcast(this.name + " " + this.surname + " has built a house!");
+                console.log("house");
                 this.resources--;
               }
               else{
@@ -492,7 +525,7 @@ class Bacteria {
                 this.resources++;
               }
               this.contributions ++;
-              if(random(100)>39||this.age>47){
+              if(population.length<15){
                 this.form = "Parent";
               }
               return true;
@@ -502,6 +535,7 @@ class Bacteria {
       }
     }
     else if(this.form === "Stonemason"&&frameCount%(1800/gSpd)===0&&this.age>18&&this.age<69){ // build
+      this.img = stonemason;
       if(this.resources > 0){
         this.buildables = [0];
         this.token = "construct";
@@ -684,7 +718,7 @@ function displayGrid(){
         rect(m*tilesize,n*tilesize,tilesize,tilesize);    // house
         if(grid[n][m][4]===6){
           fill(70,40,33);
-          rect(tilesize/4 + m*tilesize,tilesize/4 + n*tilesize,tilesize/2,tilesize/2);
+          image(house1,tilesize/4 + m*tilesize,tilesize/4 + n*tilesize,tilesize/2,tilesize/2);
         }   
         else if(grid[n][m][4]===9){ // shrine
           fill(255); 
