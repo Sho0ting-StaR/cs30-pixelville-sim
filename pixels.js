@@ -3,10 +3,13 @@
 // Date
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// - the multi menu logging system is quite interesting in my opinion, it adds a ton of life and personality to an 
+//   otherwise simplistic project, this as well as my beautiful pixelart i think brought the project together:)
+
 let gSpd = 4;
 let world = 0;
 let politico = false;
+let home;
 let dms = ["Left this world","Ascended","Did a woopsie","Perished","Faced their demise","Reached the end","Ran into a wall.. hard","Died","Left early","Took their leave", "Made their final escape","Risked it all","Lost the game of life", "Was banned","Died","Fell over","Hurted real bad","Has fallen heroically","Succumbed to time"];
 let suffixes = ["ians","ius","sons","dotirs","kins","tyrs","yivans","etans","ics","itos","ikes","jins","kidds","steels","qis","yuks","chuks","piks","jikis","hydes","piers","fibs","hearts","souls","wings","winds","grims"];
 let surnames = [" Johnson","Falcon","Roberts","Tiny","Humble","Berrington","Afton","Twilight","Moon","Tin","Dragun","Apple","Maguire","Stone","Fazbear","Smith","Lafontaine","Pierre","Pure","Fuller","Hope","Fortnite","Sigil","Bush","Boulder","Bird","Dove","Steele","Jasper","Rouge","Kiwi","Kanuk","Pibb"];
@@ -45,6 +48,24 @@ let parentI;
 let pope;
 let soldier;
 let stonemason;
+let grass;
+let rock;
+let beach;
+let lake1;
+let lake2;
+let darkgrass;
+let darkrock;
+let lagoon1;
+let lagoon2;
+let ocean1;
+let ocean2;
+let snow;
+let snowrock;
+let dessand;
+let desrock;
+let snowtrees;
+let ice;
+let darktrees;
 
 function preload(){
   baby = loadImage("images/baby.png");
@@ -56,6 +77,25 @@ function preload(){
   pope = loadImage("images/pope.png");
   soldier = loadImage("images/soldier.png");
   stonemason = loadImage("images/stonemason.png");
+  grass = loadImage("images/ngrass.png");
+  rock = loadImage("images/nrock.png");
+  beach = loadImage("images/beach.png");
+  lake1 = loadImage("images/clearlake1.png");
+  lake2 = loadImage("images/clearlake2.png");
+  darkgrass = loadImage("images/darkgrass.png");
+  darkrock = loadImage("images/darkrock.png");
+  lagoon1 = loadImage("images/deslake1.png");
+  lagoon2 = loadImage("images/deslake2.png");
+  snow = loadImage("images/snow.png");
+  snowrock = loadImage("images/snowrock.png");
+  ocean1 = loadImage("images/ocean1.png");
+  ocean2 = loadImage("images/ocean2.png");
+  dessand = loadImage("images/dessand.png");
+  desrock = loadImage("images/desrock.png");
+  snowtrees = loadImage("images/snowtrees.png");
+  ice = loadImage("images/ice.png");
+  darktrees = loadImage("images/darktrees.png");
+  trees = loadImage("images/ntrees.png");
 }
 
 function setup() {
@@ -66,6 +106,7 @@ function setup() {
   createGrid(winX,winY);
   geoMapping(grid); 
   broadcast( "Hello world!");
+  home = [house1,house2,house3][Math.floor(random(3))];
 }
 
 function draw() {
@@ -351,7 +392,7 @@ class Bacteria {
     this.current;
     this.maxage = Math.floor(random(45,80)); // when they die of old age
     this.rgb = colour;
-    this.resources = 1;
+    this.resources = 0;
     this.religion = religion;
     if(population.length<=15){
       this.form = "Parent";
@@ -514,13 +555,12 @@ class Bacteria {
         for(let y = -1; y < 2; y++){
           for(let x = -1; x < 2; x++){
             if(this.buildables.includes(grid[Math.floor(this.y/tilesize+y)][Math.floor(this.x/tilesize+x)][3])){
-              if(this.token === "Construct"){
+              if(this.token === "construct"){
                 build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),6,this.race[1],this.token);
                 broadcast(this.name + " " + this.surname + " has built a house!");
-                console.log("house");
                 this.resources--;
               }
-              else{
+              else{ // destroy
                 build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),2,this.race[1],this.token);
                 this.resources++;
               }
@@ -553,7 +593,7 @@ class Bacteria {
                 broadcast(this.name + " " + this.surname + " has built a bridge!");
                 this.resources--;
               }
-              else{
+              else{ // destroy
                 build(Math.floor(this.y/tilesize+y),Math.floor(this.x/tilesize+x),2,this.race[1],"deconstruct");
                 // this.resources++;
               }
@@ -578,9 +618,7 @@ function broadcast(message){
 }
 
 function displayGrid(){
-  let r;
-  let g;
-  let b;
+  let applicable ;
   for(let n =0; n< grid.length;n++){
     for(let m =0;m < grid[n].length;m++){
       noStroke();
@@ -589,136 +627,96 @@ function displayGrid(){
         // text(grid[n][m][2],m*tilesize,n*tilesize); // terrain type
         if(biome === 1){ // forest
           if(grid[n][m][0] < 22){ //water // drawing correct terrain
-            r = 40;
-            g = 80;
-            b = 112;
+            applicable = lake1;
             grid[n][m][3] = 0;
           }
           else if(grid[n][m][0] <31){ // beach/sand
-            r = 240; 
-            g = 170; 
-            b = 95;
+            applicable = beach;
             grid[n][m][3] = 1;
           }
           else if(grid[n][m][0] <68||grid[n][m][4] === 2){ // grass
             grid[n][m][0] = 65;
-            r = 40; 
-            g = 100; 
-            b = 30;
+            applicable = darkgrass;
             grid[n][m][3] = 2;
           }
           else if(grid[n][m][0] < 89){ // forest/trees
-            r =0; 
-            g =55; 
-            b =0;
+            applicable = darktrees;
             grid[n][m][3] = 3;
           }
           else if(grid[n][m][0] <= 100){ //rock
-            r = 115; 
-            g = 115; 
-            b = 115;
+            applicable = darkrock;
             grid[n][m][3] = 4;
           }
         }
         if(biome === 2){ // desert
           if(grid[n][m][0] < 7){ //water // drawing correct terrain
-            r = 40; 
-            g = 80; 
-            b= random(100,131);
+            applicable = lagoon1;
             grid[n][m][3] = 0;
           }
           else if(grid[n][m][0] < 50||grid[n][m][4] === 2){ // beach/sand
             grid[n][m][0] = 49;
-            r = 230; 
-            g = 160; 
-            b = 90;
+            applicable = dessand;
             grid[n][m][3] = 1;
           }
           else if(grid[n][m][0] < 60){ // grass
-            r = 33; 
-            g = 92; 
-            b = 0;
+            applicable = grass;
             grid[n][m][3] = 2;
           }
           else if(grid[n][m][0] < 70){ // forest/trees
-            r = 38; 
-            g = 72; 
-            b = 0;
+            applicable = trees;
             grid[n][m][3] = 3;
           }
           else if(grid[n][m][0] <=100){ //rock
-            r = 185; 
-            g = 90; 
-            b = 0;
+            applicable = desrock;
             grid[n][m][3] = 4;
           }
         }
         if(biome === 3){ // tundra
           if(grid[n][m][0] < 18){ //water/ice // drawing correct terrain
-            r = 160; 
-            g = 160; 
-            b= random(210,241);
+            applicable = ice;
             grid[n][m][3] = 5; // ice
           }
           else if(grid[n][m][0] < 62||grid[n][m][4]=== 2){ // grass/snow
             grid[n][m][0] = 61;
-            r = 210; 
-            g = 210; 
-            b = 225;
+            applicable = snow;
             grid[n][m][3] = 2; // ground
           }
           else if(grid[n][m][0] < 78){ // forest/trees
-            r = 32; 
-            g = 62; 
-            b = 35;
+            applicable = snowtrees;
             grid[n][m][3] = 3; //trees
           }
           else if(grid[n][m][0] <=100){ //rock
-            r = 80; 
-            g = 80; 
-            b = 80;
+            applicable = snowrock;
             grid[n][m][3] = 4; // stone
           }
 
         }
         if(biome === 4){ // archipelagos
           if(grid[n][m][0] < 50){ //water // drawing correct terrain
-            r = 0; 
-            g = 10; 
-            b= random(85,120);
+            applicable = ocean1;
             grid[n][m][3] = 0; // water
           }
           else if(grid[n][m][0] < 78||grid[n][m][4]===2){ // beach/sand
             grid[n][m][0] = 69;
-            r = 230; 
-            g = 160; 
-            b = 90;
+            applicable = beach;
             grid[n][m][3] = 1; // sand
           }
           else if(grid[n][m][0] < 90){ // grass
-            r = 43; 
-            g = 112; 
-            b = 10;
+            applicable = grass;
             grid[n][m][3] = 2; // ground
           }
           else if(grid[n][m][0] < 95){ // forest/trees
-            r = 22; 
-            g = 80; 
-            b = 30;
+            applicable = trees;
             grid[n][m][3] = 3; // trees
           }
           else if(grid[n][m][0] <=100){ //rock
-            r = 140; 
-            g = 145; 
-            b = 148;
+            applicable = rock;
             grid[n][m][3] = 4; // stone
           }
         }
-        fill(r,g,b);
-        rect(m*tilesize,n*tilesize,tilesize,tilesize);    // house
+        image(applicable,m*tilesize,n*tilesize,tilesize,tilesize);    // house
         if(grid[n][m][4]===6){
-          fill(70,40,33);
-          image(house1,tilesize/4 + m*tilesize,tilesize/4 + n*tilesize,tilesize/2,tilesize/2);
+          image(home,tilesize/4 + m*tilesize,tilesize/4 + n*tilesize,tilesize/2,tilesize/2);
         }   
         else if(grid[n][m][4]===9){ // shrine
           fill(255); 

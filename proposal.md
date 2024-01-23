@@ -5,7 +5,7 @@ my project is a mildly complex simlulation of physical,social and political grow
 ## needs to have list
 - 4 unique biomes ✔
 - 4 jobs(wood, rock, farm, apartment) ✔
-- textures for the world ҉
+- textures for the world ✔
 - oop coded population ✔
 - population count ✔
 - resource requisits. ✔
